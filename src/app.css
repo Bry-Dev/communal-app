@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: montserrat-light;
+  src: url("/src/assets/fonts/Montserrat-Light.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: montserrat-regular;
+  src: url("/src/assets/fonts/Montserrat-Regular.ttf") format("truetype");
+}
+ 
+@font-face {
+  font-family: montserrat-medium;
+  src: url("/src/assets/fonts/Montserrat-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: montserrat-bold;
+  src: url("/src/assets/fonts/Montserrat-Bold.ttf") format("truetype");
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+a:hover {
+  color: rgb(153 246 228);
+}
+
+body {
+  background: rgb(10,67,103);
+  background: radial-gradient(circle, rgba(10,67,103,1) 0%, rgba(9,21,52,1) 100%);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
