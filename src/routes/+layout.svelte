@@ -3,7 +3,7 @@
   import NavBar from "../components/NavBar.svelte";
 </script>
 
-<section class="container mx-auto mt-2">
+<section class="container mx-auto h-dvh">
   <NavBar />
   <slot />
 </section>
