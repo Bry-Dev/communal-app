@@ -4,9 +4,9 @@
   </div>
   <div class="text-white font-montserrat-regular w-[80%]">
     <nav>
-      <ul class="flex flex-row justify-evenly">
-        <li><a href="/qr-code">QR Code</a></li>
-        <li><a href="/">Next...</a></li>
+      <ul class="flex flex-row justify-evenly font-montserrat-bold">
+        <li class="hover:text-gray-300"><a href="/qr-code">QR Code</a></li>
+        <li class="hover:text-gray-300"><a href="/">Next...</a></li>
       </ul>
     </nav>
   </div>
