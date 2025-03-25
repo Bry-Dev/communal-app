@@ -89,7 +89,7 @@
   }
 </script>
 
-<section class="mx-auto grid grid-cols-2 place-items-center w-[80%] my-10">
+<section class="mx-auto grid grid-cols-2 place-items-center w-[80%] my-10 bg-gray-700">
   <fieldset class="grid grid-cols-1 border border-solid border-gray-300 p-5 rounded-md w-full">
     <legend class="font-montserrat-bold text-white underline">Customize</legend>
     <div class="flex flex-col w-full mb-4">
