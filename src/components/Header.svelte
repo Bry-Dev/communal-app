@@ -16,12 +16,6 @@
 </section>
 
 <style>
-  .logo {
-    background: rgb(10,67,103);
-    background: linear-gradient(rgb(210, 237, 253) 0%, rgb(8, 143, 221) 100%);
-    color:transparent;
-    background-clip: text;
-  }
   .bg {
     position: absolute;
     height: 100%;

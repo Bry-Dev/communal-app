@@ -22,6 +22,13 @@
   src: url("/src/assets/fonts/Montserrat-Bold.ttf") format("truetype");
 }
 
+.logo {
+  background: rgb(10,67,103);
+  background: linear-gradient(90deg, rgb(8, 143, 221) 0%, rgb(210, 237, 253) 100%);
+  color:transparent;
+  background-clip: text;
+}
+
 body {
   background: #374151;
   margin: 0;
