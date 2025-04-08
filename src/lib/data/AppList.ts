@@ -4,7 +4,7 @@ export const AppList: AppData[] = [
   {
     code: "qr",
     title: "QR Code",
-    description: "Customize your own QR Code with Svelte-put/qr.",
+    description: "Generate and customize your own QR Code with Svelte-put/qr.",
     image: "",
     isAvailable: true,
     link: "https://svelte-put.vnphanquang.com/docs/qr",
