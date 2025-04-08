@@ -2,7 +2,7 @@
   
 </script>
 
-<section class="relative flex flex-col justify-center m-0 p-0 h-[calc(100vh-44px)] items-center">
+<section class="relative flex flex-col justify-center m-0 p-0 h-[calc(100vh-45px)] items-center">
   <div class="bg">
     <div class="color-hero">
 
@@ -26,7 +26,7 @@
     background-size: 3em 3em;
   }
   .color-hero {
-    background: linear-gradient(transparent 0%, #374151 50%);
+    background: linear-gradient(transparent 0%, #0a4367 50%);
     position: absolute;
     height: 100%;
     width: 100%;
