@@ -89,7 +89,7 @@
   }
 </script>
 
-<section class="mx-auto grid grid-cols-2 place-items-center w-[80%] my-10 bg-gray-700">
+<section class="mx-auto grid grid-cols-2 place-items-start-center w-[80%] py-10 bg-[#0a4367] min-h-[75vh]">
   <fieldset class="grid grid-cols-1 border border-solid border-gray-300 p-5 rounded-md w-full">
     <legend class="font-montserrat-bold text-white underline">Customize</legend>
     <div class="flex flex-col w-full mb-4">
@@ -196,3 +196,10 @@
   
   <!-- <img {src} width="180" height="180" alt="a qr code" /> -->
 </section>
+
+<style scoped>
+  .place-items-start-center {
+    place-items: start center;
+  }
+
+</style>
