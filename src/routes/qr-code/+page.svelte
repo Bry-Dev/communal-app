@@ -89,12 +89,12 @@
   }
 </script>
 
-<section class="mx-auto grid grid-cols-2 place-items-start-center w-[80%] py-10 bg-[#0a4367] min-h-[75vh]">
+<section class="mx-auto grid grid-cols-2 place-items-start-center w-[80%] py-10 bg-[#0a4367] min-h-[calc(100vh-210px)]">
   <fieldset class="grid grid-cols-1 border border-solid border-gray-300 p-5 rounded-md w-full">
     <legend class="font-montserrat-bold text-white underline">Customize</legend>
     <div class="flex flex-col w-full mb-4">
       <label for="text-convert" class="block mb-2 text-sm font-montserrat-medium text-white">Text to QR</label>
-      <input type="text" bind:value={data} id="text-convert" class="bg-gray-700 border-gray-600 placeholder-gray-400 text-white text-sm rounded-lg focus:ring-2 focus:ring-slate-500 focus:outline-none block w-full p-2.5" placeholder="Text to convert" />
+      <input type="text" bind:value={data} id="text-convert" class="bg-gray-200 border-gray-600 placeholder-gray-400 text-gray-800 text-sm rounded-lg focus:ring-2 focus:ring-slate-500 focus:outline-none block w-full p-2.5" placeholder="Text to convert" />
     </div>
     <div class="grid grid-cols-2 w-full gap-x-5 mb-4">
       <div class="flex flex-col">
@@ -112,7 +112,7 @@
             </div>
           {/if}
         </label>
-        <input type="number" bind:value={height} id="height" max=1000 class="bg-gray-700 border-gray-600 placeholder-gray-400 text-white text-sm rounded-lg focus:ring-2 focus:ring-slate-500 focus:outline-none block w-full p-2.5" placeholder="Text to convert" />
+        <input type="number" bind:value={height} id="height" max=1000 class="bg-gray-200 border-gray-600 placeholder-gray-400 text-gray-800 text-sm rounded-lg focus:ring-2 focus:ring-slate-500 focus:outline-none block w-full p-2.5" placeholder="Text to convert" />
       </div>
       <div class="flex flex-col">
         <label for="width" class="flex items-center mb-2 text-sm font-montserrat-medium text-white">
@@ -129,7 +129,7 @@
             </div>
           {/if}
         </label>
-        <input type="number" bind:value={width} id="width" max=1000 class="bg-gray-700 border-gray-600 placeholder-gray-400 text-white text-sm rounded-lg focus:ring-2 focus:ring-slate-500 focus:outline-none block w-full p-2.5" placeholder="Text to convert" />
+        <input type="number" bind:value={width} id="width" max=1000 class="bg-gray-200 border-gray-600 placeholder-gray-400 text-gray-800 text-sm rounded-lg focus:ring-2 focus:ring-slate-500 focus:outline-none block w-full p-2.5" placeholder="Text to convert" />
       </div>
     </div>
     <div class="w-full grid grid-cols-2 gap-2 items-center justify-between">

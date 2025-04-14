@@ -1,8 +1,8 @@
 <script lang="ts">
 </script>
 
-<section class="bg-[#052335] text-white p-10 mt-8">
-  <div class="grid place-items-center md:grid-cols-3 grid-cols-1 gap-y-5">
+<section class="bg-[#052335] text-white py-5 px-10 mt-8">
+  <div class="grid place-items-start-center md:grid-cols-3 grid-cols-1 gap-y-5">
     <div class="flex flex-col max-md:items-center">
       <a href="/" class="md:text-xl font-montserrat-bold text-white logo">App Hub</a>
       <p class="font-montserrat-medium md:text-medium text-sm">Free applications for everyone to use.</p>
@@ -47,5 +47,7 @@
 </section>
 
 <style scoped>
-
+  .place-items-start-center {
+    place-items: start center;
+  }
 </style>

@@ -2,6 +2,10 @@
   const donate = (() => {
     alert("This button does nothing. For now. But I do hope it stays doing nothing.")
   })
+
+  let isOpen:boolean = $state(false);
+
+  
 </script>
 
 <section class="grid grid-cols-3 place-items-center w-full bg-[#093754] pt-1">
@@ -11,13 +15,13 @@
   <div class="text-white font-montserrat-regular w-[80%]">
     <nav>
       <ul class="flex flex-row justify-evenly font-montserrat-bold">
-        <li class="hover:text-gray-300"><a href="/qr-code">QR Code</a></li>
-        <li class="hover:text-gray-300"><a href="/">Next...</a></li>
+        <li class="hover:text-sky-300"><a href="/qr-code">QR Code</a></li>
+        <li class="hover:text-sky-300"><a href="/">Next...</a></li>
       </ul>
     </nav>
   </div>
   <div>
-    <button type="button" on:click={donate} class="text-white bg-gradient-to-r from-[#62BEC1] via-[#62BEC1] to-[#5AD2F4] hover:bg-gradient-to-t focus:ring-1 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm px-5 py-1.5 text-center me-2 mb-2">Donate</button>
+    <button type="button" onclick={donate} class="text-white bg-gradient-to-r from-[#62BEC1] via-[#62BEC1] to-[#5AD2F4] hover:bg-gradient-to-t focus:ring-1 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm px-5 py-1.5 text-center me-2 mb-2">Donate</button>
     <!-- <a href="/" class="text-md font-montserrat-bold text-white logo">Donate</a> -->
   </div>
   <!-- <div class="relative md:block hidden">
