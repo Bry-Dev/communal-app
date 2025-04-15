@@ -5,23 +5,30 @@
 
   let isOpen:boolean = $state(false);
 
+  const openMenu = () => {
+    isOpen = !isOpen
+  }
   
 </script>
 
-<section class="grid grid-cols-3 place-items-center w-full bg-[#093754] pt-1">
-  <div>
+<section class="grid grid-cols-2 md:grid-cols-3 place-items-center w-full bg-[#093754] py-1">
+  <div class="flex items-center">
     <a href="/" class="text-xl font-montserrat-bold text-white logo">App Hub</a>
+    <button onclick={openMenu} id="nav-toggle" data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 ml-3 text-sm rounded-lg md:hidden focus:outline-none focus:ring-1 text-white hover:bg-[#265a7a] focus:ring-sky-600">
+      <span class="sr-only">Open main menu</span>
+      <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
+    </button>
   </div>
-  <div class="text-white font-montserrat-regular w-[80%]">
+  <div class:hidden={!isOpen} class="text-white md:text-lg text-sm md:block font-montserrat-regular w-[80%] max-md:col-span-2 max-md:order-3 max-md:mt-2 max-md:py-2 md:bg-transparent bg-[#165e8a] rounded-lg">
     <nav>
-      <ul class="flex flex-row justify-evenly font-montserrat-bold">
+      <ul class="flex flex-col md:flex-row md:justify-around font-montserrat-bold gap-y-3 justify-center max-md:ml-10">
         <li class="hover:text-sky-300"><a href="/qr-code">QR Code</a></li>
         <li class="hover:text-sky-300"><a href="/">Next...</a></li>
       </ul>
     </nav>
   </div>
-  <div>
-    <button type="button" onclick={donate} class="text-white bg-gradient-to-r from-[#62BEC1] via-[#62BEC1] to-[#5AD2F4] hover:bg-gradient-to-t focus:ring-1 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm px-5 py-1.5 text-center me-2 mb-2">Donate</button>
+  <div class="max-md:order-2">
+    <button type="button" onclick={donate} class="text-white bg-gradient-to-r from-[#62BEC1] via-[#62BEC1] to-[#5AD2F4] hover:bg-gradient-to-t focus:ring-1 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm px-5 py-1 text-center me-2">Donate</button>
     <!-- <a href="/" class="text-md font-montserrat-bold text-white logo">Donate</a> -->
   </div>
   <!-- <div class="relative md:block hidden">
@@ -35,6 +42,7 @@
 </section>
 
 <style>
+  
   /* input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,

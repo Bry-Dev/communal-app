@@ -18,5 +18,6 @@ export const AppList: AppData[] = [
     isAvailable: false,
     link: "#",
     trialLink: "#"
-  }
+  },
+  
 ]

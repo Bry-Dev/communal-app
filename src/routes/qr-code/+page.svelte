@@ -89,7 +89,7 @@
   }
 </script>
 
-<section class="mx-auto grid grid-cols-2 place-items-start-center w-[80%] py-10 bg-[#0a4367] min-h-[calc(100vh-210px)]">
+<section class="mx-auto grid grid-cols-1 md:grid-cols-2 place-items-start-center w-[80%] py-10 bg-[#0a4367] min-h-[calc(100vh-210px)]">
   <fieldset class="grid grid-cols-1 border border-solid border-gray-300 p-5 rounded-md w-full">
     <legend class="font-montserrat-bold text-white underline">Customize</legend>
     <div class="flex flex-col w-full mb-4">
@@ -183,7 +183,7 @@
   <div class="flex flex-col items-center justify-center self-start mt-4">
     <SvgQR
       style="background-color: {backgroundFill};"
-      class=" h-[300px] w-[300px] mb-4"
+      class="md:h-[300px] md:w-[300px] h-1/4 w-full mb-4"
       {data}
       {shape}
       {moduleFill}
