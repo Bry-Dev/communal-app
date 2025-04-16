@@ -35,7 +35,7 @@
   </div>
   {#each getVisibleSlides(currentIndex, visibleCount) as app }
     <div in:fade class="h-[300px] w-[30em] border-2 rounded-lg py-5 px-3 overflow-hidden shadow-lg flex flex-col">
-      <a href={app.link} target="_blank" rel="noopener noreferrer" class="mr-auto font-bold font-montserrat-bold text-base lg:text-xl transition duration-300 group hover:text-sky-300">
+      <a href="{app.link}" target="_blank" rel="noopener noreferrer" class="mr-auto font-bold font-montserrat-bold text-base lg:text-xl transition duration-300 group hover:text-sky-300">
         {app.title}
         <span class="block w-0 group-hover:w-full transition-all duration-500 h-0.5 bg-sky-300"></span>
       </a>
