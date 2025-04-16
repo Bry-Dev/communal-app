@@ -1,5 +1,6 @@
 <script lang="ts">
   import { AppList } from "$lib/data/AppList";
+  import { base } from "$app/paths";
   import { fade } from 'svelte/transition';
   let innerWidth = $state(0);
   let visibleCount = $state(2);
@@ -41,7 +42,7 @@
       <p class="text-pretty py-2">
         {app.description}
       </p>
-      <a href={app.trialLink} class:hidden={!app.isAvailable} target="_blank" rel="noopener noreferrer" class="font-semibold hover:text-sky-200">
+      <a href="{base}{app.trialLink}" class:hidden={!app.isAvailable} target="_blank" rel="noopener noreferrer" class="font-semibold hover:text-sky-200">
         Try it<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="inline-block h-4 w-4 ml-1" aria-hidden="true">
         <path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clip-rule="evenodd"></path>
         </svg>

@@ -7,7 +7,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"deploy": "pnpm build && pnpm dlx gh-pages -d build -t true",
+		"deploy": "pnpm build && gh-pages -d build",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
@@ -27,6 +27,7 @@
 		"vite": "^6.0.0"
 	},
 	"dependencies": {
-		"gh-pages": "^6.3.0"
+		"gh-pages": "^6.3.0",
+		"pnpm": "^10.8.1"
 	}
 }
