@@ -1,5 +1,15 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
+
   const year = new Date().getFullYear();
+  const isHome = $derived(page.url.pathname === resolve('/'));
+
+  const quickLinks = [
+    { label: 'Browse apps', anchor: 'apps' },
+    { label: 'Why App Hub', anchor: 'benefits' },
+    { label: 'Submit idea', anchor: 'suggest' }
+  ];
 </script>
 
 <footer class="border-t border-white/10 bg-slate-950/80">
@@ -22,9 +32,9 @@
     <div>
       <p class="mb-4 font-semibold text-white">Quick links</p>
       <div class="space-y-3">
-        <a href="#apps" class="block transition hover:text-white">Browse apps</a>
-        <a href="#benefits" class="block transition hover:text-white">Why App Hub</a>
-        <a href="#suggest" class="block transition hover:text-white">Submit idea</a>
+        {#each quickLinks as link}
+          <a href={isHome ? `#${link.anchor}` : `${resolve('/')}#${link.anchor}`} class="block transition hover:text-white">{link.label}</a>
+        {/each}
       </div>
     </div>
 

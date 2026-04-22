@@ -1,3 +1,5 @@
+import type { RouteId } from '$app/types';
+
 export type AppStatus = 'live' | 'coming-soon';
 export type AppCategory = 'Utilities' | 'Productivity' | 'Business' | 'Experiments';
 
@@ -7,7 +9,7 @@ export type HubApp = {
   description: string;
   status: AppStatus;
   category: AppCategory;
-  href: string;
+  href: RouteId | '#';
   eyebrow: string;
   badge?: string;
 };

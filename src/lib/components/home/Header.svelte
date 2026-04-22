@@ -1,4 +1,11 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
+
+  const isHome = $derived(page.url.pathname === resolve('/'));
+  const appsHref = $derived(isHome ? '#apps' : `${resolve('/')}#apps`);
+  const suggestHref = $derived(isHome ? '#suggest' : `${resolve('/')}#suggest`);
+
   const statCards = [
     { label: 'Free to use', value: '100%' },
     { label: 'Built for speed', value: '< 1 min' },
@@ -33,13 +40,13 @@
 
       <div class="flex flex-col gap-3 sm:flex-row">
         <a
-          href="#apps"
+          href={appsHref}
           class="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:shadow-xl"
         >
           Explore apps
         </a>
         <a
-          href="#suggest"
+          href={suggestHref}
           class="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition hover:border-white/25 hover:bg-white/10"
         >
           Suggest an idea
@@ -63,7 +70,7 @@
         <div class="flex items-center justify-between border-b border-white/10 px-6 py-4">
           <div>
             <p class="text-sm font-semibold uppercase tracking-[0.24em] text-sky-300">Featured app</p>
-            <a href="/qr-code"><h2 class="mt-1 text-xl font-semibold text-white">QR Code Generator</h2></a>
+            <a href={resolve('/qr-code')}><h2 class="mt-1 text-xl font-semibold text-white">QR Code Generator</h2></a>
           </div>
           <span class="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-semibold text-emerald-300">
             Live now

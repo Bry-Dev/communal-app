@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
+  import type { RouteId } from '$app/types';
   import type { HubApp } from '$lib/data/apps';
 
   export let app: HubApp;
@@ -42,7 +44,7 @@
 
       {#if app.status === 'live'}
         <a
-          href={app.href}
+          href={resolve(app.href as RouteId)}
           class="inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-100"
         >
           Open app
