@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import SvgQR from '@svelte-put/qr/svg/QR.svelte';
+  import { resolve } from '$app/paths';
   import { createQrPngDataUrl } from '@svelte-put/qr';
 
   const validImageTypes = ['image/gif', 'image/jpeg', 'image/png'];
@@ -145,7 +146,7 @@
     <div class="mb-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
       <div class="max-w-3xl space-y-4">
         <a
-          href="/"
+          href={resolve('/')}
           class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 backdrop-blur transition hover:bg-white/10"
         >
           ← Back to App Hub
