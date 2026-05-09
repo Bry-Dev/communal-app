@@ -1,10 +1,13 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
+  import type { RouteId } from '$app/types';
+  import { apps } from '$lib/data/apps';
 
   const isHome = $derived(page.url.pathname === resolve('/'));
   const appsHref = $derived(isHome ? '#apps' : `${resolve('/')}#apps`);
   const suggestHref = $derived(isHome ? '#suggest' : `${resolve('/')}#suggest`);
+  const featuredApps = apps.filter((app) => app.status === 'live');
 
   const statCards = [
     { label: 'Free to use', value: '100%' },
@@ -69,24 +72,41 @@
       <div class="relative overflow-hidden rounded-[2rem] border border-white/10 bg-slate-900/80 shadow-2xl shadow-sky-950/40 backdrop-blur-xl">
         <div class="flex items-center justify-between border-b border-white/10 px-6 py-4">
           <div>
-            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-sky-300">Featured app</p>
-            <a href={resolve('/qr-code')}><h2 class="mt-1 text-xl font-semibold text-white">QR Code Generator</h2></a>
+            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-sky-300">Featured apps</p>
+            <p class="mt-1 text-xs text-slate-300">{featuredApps.length} live tools available</p>
           </div>
           <span class="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-semibold text-emerald-300">
             Live now
           </span>
         </div>
 
-        <div class="space-y-6 p-6">
-          <div class="grid grid-cols-[120px_1fr] gap-5 rounded-3xl border border-white/10 bg-slate-950/70 p-5">
-            <div class="flex aspect-square items-center justify-center rounded-2xl border border-dashed border-sky-300/30 bg-gradient-to-br from-sky-400/10 to-violet-400/10">
-              <div class="grid grid-cols-4 gap-1">
-                {#each Array(16) as _, index}
-                  <span class:opacity-100={index % 2 === 0 || index === 1 || index === 10} class="h-4 w-4 rounded-sm bg-white opacity-20"></span>
-                {/each}
-              </div>
-            </div>
-          </div>
+        <div class="space-y-4 p-6">
+          {#if featuredApps.length === 0}
+            <p class="rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-300">
+              No live apps yet.
+            </p>
+          {:else}
+            {#each featuredApps as app}
+              <article class="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
+                <div class="flex items-start justify-between gap-4">
+                  <div class="space-y-2">
+                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-300">{app.eyebrow}</p>
+                    <a href={resolve(app.href as RouteId)} class="block text-lg font-semibold text-white hover:text-sky-200">
+                      {app.title}
+                    </a>
+                    <p class="text-sm leading-6 text-slate-300">{app.description}</p>
+                  </div>
+
+                  <a
+                    href={resolve(app.href as RouteId)}
+                    class="inline-flex shrink-0 items-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-100"
+                  >
+                    Open
+                  </a>
+                </div>
+              </article>
+            {/each}
+          {/if}
         </div>
       </div>
     </div>

@@ -26,6 +26,16 @@ export const apps: HubApp[] = [
     badge: 'Live now'
   },
   {
+    code: 'words',
+    title: 'Word Counter',
+    description: 'Count words and characters instantly, and estimate reading time with a custom WPM setting.',
+    status: 'live',
+    category: 'Productivity',
+    href: '/word-counter',
+    eyebrow: 'Writing helper',
+    badge: 'Live now'
+  },
+  {
     code: 'text',
     title: 'Text Formatter',
     description: 'Clean pasted text, fix spacing, and transform content into cleaner output for docs or chat.',
@@ -33,16 +43,6 @@ export const apps: HubApp[] = [
     category: 'Productivity',
     href: '#',
     eyebrow: 'Workflow helper',
-    badge: 'Coming soon'
-  },
-  {
-    code: 'split',
-    title: 'Expense Splitter',
-    description: 'Split meals, trips, and shared expenses without opening a spreadsheet.',
-    status: 'coming-soon',
-    category: 'Business',
-    href: '#',
-    eyebrow: 'Group math',
     badge: 'Coming soon'
   },
   {

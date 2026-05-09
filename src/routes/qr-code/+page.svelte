@@ -153,18 +153,17 @@
         </a>
 
         <div class="space-y-3">
-          <p class="text-sm font-semibold uppercase tracking-[0.28em] text-sky-300">Live utility</p>
-          <h1 class="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+          <p class="text-xs font-semibold uppercase tracking-[0.28em] text-sky-300 sm:text-sm">Live utility</p>
+          <h1 class="text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
             QR Code Generator
           </h1>
-          <p class="max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
-            Generate a branded QR code with custom colors, shapes, size controls, and optional logo upload.
-            The layout below turns the tool into a cleaner app experience instead of a plain settings form.
+          <p class="max-w-2xl text-xs leading-6 text-slate-300 sm:text-sm lg:text-base">
+            Create a branded QR code with custom colors, shape, size, and an optional logo.
           </p>
         </div>
       </div>
 
-      <div class="flex flex-wrap gap-3 text-sm text-slate-200">
+      <div class="flex flex-wrap gap-3 text-xs text-slate-200 sm:text-sm">
         <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2">PNG download</span>
         <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2">Logo support</span>
         <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2">Live preview</span>
@@ -176,31 +175,31 @@
         <div class="rounded-[2rem] border border-white/10 bg-slate-900/70 p-6 shadow-2xl shadow-slate-950/20 backdrop-blur-xl sm:p-8">
           <div class="mb-6 flex items-center justify-between gap-4">
             <div>
-              <p class="text-sm font-semibold uppercase tracking-[0.24em] text-sky-300">Customize</p>
-              <h2 class="mt-2 text-2xl font-semibold text-white">Build your QR code</h2>
+              <p class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-300 sm:text-sm">Customize</p>
+              <h2 class="mt-2 text-xl font-semibold text-white sm:text-2xl">Build your QR code</h2>
             </div>
             <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-right">
               <p class="text-xs uppercase tracking-[0.22em] text-slate-400">Canvas</p>
-              <p class="mt-1 text-lg font-semibold text-white">{width} × {height}</p>
+              <p class="mt-1 text-base font-semibold text-white sm:text-lg">{width} × {height}</p>
             </div>
           </div>
 
           <div class="space-y-8">
             <div class="space-y-3">
-              <label for="text-convert" class="block text-sm font-medium text-slate-200">Text or URL</label>
+              <label for="text-convert" class="block text-xs font-medium text-slate-200 sm:text-sm">Text or URL</label>
               <textarea
                 id="text-convert"
                 bind:value={data}
                 rows="4"
-                class="block w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/20"
+                class="block w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:border-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/20 sm:text-sm"
                 placeholder="Paste a URL, text, or contact info"
               ></textarea>
-              <p class="text-sm text-slate-400">Best for links, Wi-Fi credentials, profile URLs, menus, and event signage.</p>
+              <p class="text-xs text-slate-400 sm:text-sm">Best for links, Wi-Fi credentials, profile URLs, menus, and event signage.</p>
             </div>
 
             <div class="space-y-4">
               <div class="flex items-center justify-between gap-4">
-                <h3 class="text-sm font-semibold uppercase tracking-[0.24em] text-slate-300">Quick presets</h3>
+                <h3 class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-300 sm:text-sm">Quick presets</h3>
                 <p class="text-xs text-slate-500">One tap theme</p>
               </div>
               <div class="flex flex-wrap gap-3">
@@ -208,7 +207,7 @@
                   <button
                     type="button"
                     onclick={() => applyPreset(preset)}
-                    class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:bg-white/10"
+                    class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium text-slate-200 transition hover:border-white/20 hover:bg-white/10 sm:text-sm"
                   >
                     {preset.label}
                   </button>
@@ -218,7 +217,7 @@
 
             <div class="grid gap-5 sm:grid-cols-2">
               <div class="space-y-2">
-                <label for="height" class="flex items-center gap-2 text-sm font-medium text-slate-200">
+                <label for="height" class="flex items-center gap-2 text-xs font-medium text-slate-200 sm:text-sm">
                   Height
                   {#if isHeightErr}
                     <span class="rounded-full bg-amber-400/10 px-2.5 py-1 text-xs font-semibold text-amber-200">
@@ -237,7 +236,7 @@
               </div>
 
               <div class="space-y-2">
-                <label for="width" class="flex items-center gap-2 text-sm font-medium text-slate-200">
+                <label for="width" class="flex items-center gap-2 text-xs font-medium text-slate-200 sm:text-sm">
                   Width
                   {#if isWidthErr}
                     <span class="rounded-full bg-amber-400/10 px-2.5 py-1 text-xs font-semibold text-amber-200">
@@ -258,7 +257,7 @@
 
             <div class="grid gap-4 sm:grid-cols-2">
               <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-                <label for="background-color" class="mb-3 block text-sm font-medium text-slate-200">Background</label>
+                <label for="background-color" class="mb-3 block text-xs font-medium text-slate-200 sm:text-sm">Background</label>
                 <div class="flex items-center gap-3">
                   <input id="background-color" type="color" bind:value={backgroundFill} class="p-1 h-12 w-16 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
                   <span class="rounded-full border border-white/10 bg-slate-950/70 px-3 py-1.5 text-xs font-medium text-slate-300">{backgroundFill}</span>
@@ -266,7 +265,7 @@
               </div>
 
               <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-                <label for="module-color" class="mb-3 block text-sm font-medium text-slate-200">Module</label>
+                <label for="module-color" class="mb-3 block text-xs font-medium text-slate-200 sm:text-sm">Module</label>
                 <div class="flex items-center gap-3">
                   <input id="module-color" type="color" bind:value={moduleFill} class="p-1 h-12 w-16 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
                   <span class="rounded-full border border-white/10 bg-slate-950/70 px-3 py-1.5 text-xs font-medium text-slate-300">{moduleFill}</span>
@@ -274,7 +273,7 @@
               </div>
 
               <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-                <label for="anchor-inner-color" class="mb-3 block text-sm font-medium text-slate-200">Inner anchor</label>
+                <label for="anchor-inner-color" class="mb-3 block text-xs font-medium text-slate-200 sm:text-sm">Inner anchor</label>
                 <div class="flex items-center gap-3">
                   <input id="anchor-inner-color" type="color" bind:value={anchorInnerFill} class="p-1 h-12 w-16 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
                   <span class="rounded-full border border-white/10 bg-slate-950/70 px-3 py-1.5 text-xs font-medium text-slate-300">{anchorInnerFill}</span>
@@ -282,7 +281,7 @@
               </div>
 
               <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-                <label for="anchor-outer-color" class="mb-3 block text-sm font-medium text-slate-200">Outer anchor</label>
+                <label for="anchor-outer-color" class="mb-3 block text-xs font-medium text-slate-200 sm:text-sm">Outer anchor</label>
                 <div class="flex items-center gap-3">
                   <input id="anchor-outer-color" type="color" bind:value={anchorOuterFill} class="p-1 h-12 w-16 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
                   <span class="rounded-full border border-white/10 bg-slate-950/70 px-3 py-1.5 text-xs font-medium text-slate-300">{anchorOuterFill}</span>
@@ -291,14 +290,14 @@
             </div>
 
             <div class="space-y-3">
-              <h3 class="text-sm font-semibold uppercase tracking-[0.24em] text-slate-300">Shape</h3>
+              <h3 class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-300 sm:text-sm">Shape</h3>
               <div class="inline-flex rounded-full border border-white/10 bg-white/5 p-1">
                 {#each shapeOptions as option}
                   <label class="cursor-pointer">
                     <input type="radio" class="sr-only" name="shape" value={option.value} bind:group={shape} />
                     <span
                       class:selected-pill={shape === option.value}
-                      class="inline-flex rounded-full px-4 py-2 text-sm font-medium text-slate-300 transition"
+                      class="inline-flex rounded-full px-4 py-2 text-xs font-medium text-slate-300 transition sm:text-sm"
                     >
                       {option.label}
                     </span>
@@ -310,14 +309,14 @@
             <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
               <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h3 class="text-sm font-semibold uppercase tracking-[0.24em] text-slate-300">Logo overlay</h3>
-                  <p class="mt-2 text-sm leading-6 text-slate-400">
+                  <h3 class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-300 sm:text-sm">Logo overlay</h3>
+                  <p class="mt-2 text-xs leading-6 text-slate-400 sm:text-sm">
                     Add a PNG or JPG logo in the center for branded sharing.
                   </p>
                 </div>
 
                 <label class="inline-flex cursor-pointer items-center gap-3">
-                  <span class="text-sm font-medium text-slate-200">Enable</span>
+                  <span class="text-xs font-medium text-slate-200 sm:text-sm">Enable</span>
                   <input type="checkbox" bind:checked={withLogo} class="h-5 w-5 rounded border-white/20 bg-slate-950/70 text-sky-400 focus:ring-sky-400/30" />
                 </label>
               </div>
@@ -330,7 +329,7 @@
                     type="file"
                     bind:files
                     onchange={loadIcon}
-                    class="block w-full rounded-2xl border border-dashed border-white/15 bg-slate-950/60 px-4 py-3 text-sm text-slate-300 file:mr-4 file:rounded-full file:border-0 file:bg-white file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-950 hover:file:bg-sky-100"
+                    class="block w-full rounded-2xl border border-dashed border-white/15 bg-slate-950/60 px-4 py-3 text-xs text-slate-300 file:mr-4 file:rounded-full file:border-0 file:bg-white file:px-4 file:py-2 file:text-xs file:font-semibold file:text-slate-950 hover:file:bg-sky-100 sm:text-sm sm:file:text-sm"
                   />
 
                   {#if showPreview}
@@ -338,15 +337,15 @@
                       <div class="flex items-center gap-4">
                         <img src={logoPreview} alt="Logo preview" class="h-16 w-16 rounded-2xl object-cover ring-1 ring-white/10" />
                         <div>
-                          <p class="text-sm font-medium text-white">Logo preview ready</p>
-                          <p class="text-sm text-slate-400">Centered inside the QR code.</p>
+                          <p class="text-xs font-medium text-white sm:text-sm">Logo preview ready</p>
+                          <p class="text-xs text-slate-400 sm:text-sm">Centered inside the QR code.</p>
                         </div>
                       </div>
 
                       <button
                         type="button"
                         onclick={removeLogo}
-                        class="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/10"
+                        class="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium text-slate-200 transition hover:bg-white/10 sm:text-sm"
                       >
                         Remove logo
                       </button>
@@ -364,13 +363,13 @@
           <div class="border-b border-white/10 px-6 py-5 sm:px-8">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p class="text-sm font-semibold uppercase tracking-[0.24em] text-sky-300">Preview</p>
-                <h2 class="mt-2 text-2xl font-semibold text-white">Ready to export</h2>
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-300 sm:text-sm">Preview</p>
+                <h2 class="mt-2 text-xl font-semibold text-white sm:text-2xl">Ready to export</h2>
               </div>
               <a
                 href={dataURL}
                 download="qr.png"
-                class="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:shadow-xl"
+                class="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-xs font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:shadow-xl sm:text-sm"
               >
                 Download PNG
               </a>
@@ -396,21 +395,21 @@
             <div class="grid gap-3 sm:grid-cols-3">
               <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <p class="text-xs uppercase tracking-[0.22em] text-slate-500">Shape</p>
-                <p class="mt-2 text-sm font-medium text-white">{shape}</p>
+                <p class="mt-2 text-xs font-medium text-white sm:text-sm">{shape}</p>
               </div>
               <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <p class="text-xs uppercase tracking-[0.22em] text-slate-500">Logo</p>
-                <p class="mt-2 text-sm font-medium text-white">{withLogo ? 'Enabled' : 'None'}</p>
+                <p class="mt-2 text-xs font-medium text-white sm:text-sm">{withLogo ? 'Enabled' : 'None'}</p>
               </div>
               <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <p class="text-xs uppercase tracking-[0.22em] text-slate-500">Text length</p>
-                <p class="mt-2 text-sm font-medium text-white">{data.length} chars</p>
+                <p class="mt-2 text-xs font-medium text-white sm:text-sm">{data.length} chars</p>
               </div>
             </div>
 
             <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
-              <h3 class="text-sm font-semibold uppercase tracking-[0.24em] text-slate-300">Helpful notes</h3>
-              <ul class="mt-4 space-y-3 text-sm leading-6 text-slate-300">
+              <h3 class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-300 sm:text-sm">Helpful notes</h3>
+              <ul class="mt-4 space-y-3 text-xs leading-6 text-slate-300 sm:text-sm">
                 <li>• Keep height and width balanced for a crisp square export.</li>
                 <li>• Larger than 1000px still works, but the resulting PNG will be heavier.</li>
                 <li>• High contrast between background and module colors improves scan reliability.</li>
