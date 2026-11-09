@@ -10,6 +10,8 @@
 		"deploy": "npm run build && gh-pages -d build",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"test:qr": "node --test tests/qr-content.test.mjs",
+		"test:text": "node --test tests/text-format.test.mjs",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {

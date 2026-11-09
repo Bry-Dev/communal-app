@@ -1,54 +1,11 @@
-<script lang="ts">
-  import { resolve } from '$app/paths';
-  import { page } from '$app/state';
-
-  const year = new Date().getFullYear();
-  const isHome = $derived(page.url.pathname === resolve('/'));
-
-  const quickLinks = [
-    { label: 'Browse apps', anchor: 'apps' },
-    { label: 'Why App Hub', anchor: 'benefits' },
-    { label: 'Submit idea', anchor: 'suggest' }
-  ];
-</script>
-
-<footer class="border-t border-white/10 bg-slate-950/80">
-  <div class="mx-auto grid max-w-7xl gap-10 px-6 py-12 text-sm text-slate-400 lg:grid-cols-[1.1fr_0.8fr_0.8fr] lg:px-8">
-    <div class="space-y-4">
-      <div class="flex items-center gap-3 text-white">
-        <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-400 via-cyan-300 to-violet-400 text-sm font-black text-slate-950">
-          AH
-        </span>
-        <div>
-          <p class="font-semibold">App Hub</p>
-          <p class="text-slate-400">Useful tools with less friction.</p>
-        </div>
-      </div>
-      <p class="max-w-md leading-6">
-        A clean front-end foundation for a growing collection of small, practical web applications.
-      </p>
+<script lang="ts">const year = new Date().getFullYear();</script>
+<footer class="border-t border-line">
+  <div class="page-width flex flex-col justify-between gap-4 py-7 text-sm text-muted sm:flex-row sm:items-center">
+    <p><span class="font-semibold text-ink">App Hub</span><span class="ml-3">A little help goes a long way.</span></p>
+    <div class="flex items-center gap-5">
+      <a class="quiet-link" href="https://github.com/Bry-Dev/communal-app" target="_blank" rel="noreferrer">GitHub</a>
+      <a class="quiet-link" href="https://bryan-pineda.web.app/" target="_blank" rel="noreferrer">Made by Bryan</a>
+      <span>© {year}</span>
     </div>
-
-    <div>
-      <p class="mb-4 font-semibold text-white">Quick links</p>
-      <div class="space-y-3">
-        {#each quickLinks as link}
-          <a href={isHome ? `#${link.anchor}` : `${resolve('/')}#${link.anchor}`} class="block transition hover:text-white">{link.label}</a>
-        {/each}
-      </div>
-    </div>
-
-    <div>
-      <p class="mb-4 font-semibold text-white">Elsewhere</p>
-      <div class="space-y-3">
-        <a href="https://github.com/Bry-Dev/communal-app" target="_blank" rel="noreferrer" class="block transition hover:text-white">GitHub</a>
-        <a href="https://bryan-pineda.web.app/" target="_blank" rel="noreferrer" class="block transition hover:text-white">About me</a>
-        <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" class="block transition hover:text-white">LinkedIn</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="border-t border-white/10 px-6 py-4 text-center text-xs text-slate-500 lg:px-8">
-    © {year} App Hub. All rights reserved.
   </div>
 </footer>

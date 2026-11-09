@@ -1,70 +1,53 @@
 <script lang="ts">
   import AppCard from '$lib/components/home/AppCard.svelte';
   import Hero from '$lib/components/home/Header.svelte';
-  import SectionHeading from '$lib/components/home/SectionHeading.svelte';
   import SuggestionCta from '$lib/components/home/SuggestionCta.svelte';
   import ValueProps from '$lib/components/home/ValueProps.svelte';
-  import { apps, categories, type AppCategory } from '$lib/data/apps';
-
-  let selectedCategory: 'All' | AppCategory = 'All';
-
-  $: filteredApps =
-    selectedCategory === 'All'
-      ? apps
-      : apps.filter((app) => app.category === selectedCategory);
+  import ToolIcon from '$lib/components/ToolIcon.svelte';
+  import { apps } from '$lib/data/apps';
+  const liveApps = apps.filter((app) => app.status === 'live');
+  const plannedApps = apps.filter((app) => app.status === 'coming-soon');
+  const categories = ['All tools', ...new Set(liveApps.map((app) => app.category))];
+  let selectedCategory = 'All tools';
+  $: filteredApps = liveApps.filter((app) => selectedCategory === 'All tools' || app.category === selectedCategory);
 </script>
-
 <svelte:head>
-  <title>App Hub</title>
-  <meta
-    name="description"
-    content="Free tools for everyday work. Explore lightweight utilities built to solve small repetitive tasks."
-  />
+  <title>App Hub — Free tools for everyday tasks</title>
+  <meta name="description" content="Make a QR code or count your words with free, simple tools that work right in your browser. No account needed." />
 </svelte:head>
-
-<div class="min-h-screen bg-slate-950 text-white">
-  <Hero />
-
-  <section id="apps" class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-    <div class="space-y-10">
-      <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <SectionHeading
-          eyebrow="Featured tools"
-          title="Browse the current collection"
-          description="A cleaner homepage grid gives each app room to explain what it does and whether it is already available."
-        />
-
-        <div class="flex flex-wrap gap-3">
-          {#each categories as category}
-            <button
-              type="button"
-              on:click={() => (selectedCategory = category)}
-              class:selected={selectedCategory === category}
-              class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:bg-white/10"
-            >
-              {category}
-            </button>
-          {/each}
-        </div>
-      </div>
-
-      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        {#each filteredApps as app}
-          <AppCard {app} />
-        {/each}
-      </div>
+<Hero />
+<section id="apps" class="page-width pb-14" aria-labelledby="tools-title">
+  <div class="mb-6 flex flex-col justify-between gap-5 border-t border-line pt-7 sm:flex-row sm:items-center">
+    <h2 id="tools-title" class="flex items-center gap-3 text-xl font-bold">Your everyday toolkit <span class="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-soft px-2 font-sans text-xs font-medium text-muted">{liveApps.length}<span class="sr-only"> tools</span></span></h2>
+    <div class="tool-filters flex flex-wrap gap-1" role="group" aria-label="Filter tools by category">
+      {#each categories as category}
+        <button type="button" on:click={() => selectedCategory = category} aria-pressed={selectedCategory === category} class="filter-button min-h-11 rounded-full px-4 py-2 text-sm font-medium">{category}</button>
+      {/each}
     </div>
-  </section>
-
-  <ValueProps />
-  <SuggestionCta />
-</div>
-
+  </div>
+  <div class="grid gap-5 md:grid-cols-2">
+    {#each filteredApps as app}<AppCard {app} />{/each}
+  </div>
+  <p class="sr-only" role="status">{filteredApps.length} tools shown</p>
+  <div class="mt-9">
+    <h2 class="mb-4 text-sm font-medium text-muted">On the workbench</h2>
+    <div class="grid gap-4 md:grid-cols-2">
+      {#each plannedApps as app}
+        <div class="flex items-center gap-4 rounded-xl border border-dashed border-line px-5 py-4">
+          <span class="text-muted"><ToolIcon code={app.code} /></span>
+          <div class="flex-1"><h3 class="text-sm font-medium">{app.title}</h3><p class="mt-1 text-sm text-muted">{app.eyebrow}</p></div>
+          <span class="text-xs text-muted">Coming soon</span>
+        </div>
+      {/each}
+    </div>
+  </div>
+</section>
+<ValueProps />
+<SuggestionCta />
 <style>
-  .selected {
-    border-color: rgba(125, 211, 252, 0.4);
-    background: rgba(56, 189, 248, 0.14);
-    color: white;
-    box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.1) inset;
-  }
+  .tool-filters { align-self: flex-start; border: 1px solid var(--line); border-radius: 28px; padding: 4px; background: var(--soft); }
+  .filter-button { color: var(--muted); transition: background 160ms, color 160ms, box-shadow 160ms; }
+  .filter-button:hover { background: var(--soft); color: var(--ink); }
+  .filter-button[aria-pressed='true'] { background: var(--surface); color: var(--accent); box-shadow: 0 1px 4px var(--shadow); }
+  @media (max-width: 359px) { .filter-button { padding-inline: 12px; font-size: 12px; } }
 </style>

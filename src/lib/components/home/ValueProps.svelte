@@ -1,35 +1,7 @@
-<script lang="ts">
-  import FeatureCard from './FeatureCard.svelte';
-  import SectionHeading from './SectionHeading.svelte';
-
-  const items = [
-    {
-      title: 'Focused utilities',
-      description: 'Each app is built to solve one clear problem without extra clutter or setup.'
-    },
-    {
-      title: 'Fast to open',
-      description: 'The experience is designed to get users from landing page to useful action quickly.'
-    },
-    {
-      title: 'Built to grow',
-      description: 'The homepage layout is ready for more tools, categories, featured items, and community ideas.'
-    }
-  ];
-</script>
-
-<section id="benefits" class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-  <div class="space-y-10">
-    <SectionHeading
-      eyebrow="Why this redesign works"
-      title="A cleaner product story for App Hub"
-      description="Instead of a sparse landing page, this version presents the site as a growing library of practical tools."
-    />
-
-    <div class="grid gap-6 lg:grid-cols-3">
-      {#each items as item}
-        <FeatureCard {...item} />
-      {/each}
-    </div>
+<section id="benefits" class="page-width">
+  <div class="grid divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+    <div class="min-w-0 p-6 sm:p-7"><h2 class="text-sm font-bold">Just open and go</h2><p class="mt-2 text-sm leading-6 text-muted">No account, installation, or setup. Your tools are ready when you are.</p></div>
+    <div class="min-w-0 p-6 sm:p-7"><h2 class="text-sm font-bold">Your text stays with you</h2><p class="mt-2 text-sm leading-6 text-muted">Word counts and QR codes are created right in your browser.</p></div>
+    <div class="min-w-0 p-6 sm:p-7"><h2 class="text-sm font-bold">Free for the everyday</h2><p class="mt-2 text-sm leading-6 text-muted">A small collection of useful things, with no subscription to think about.</p></div>
   </div>
 </section>

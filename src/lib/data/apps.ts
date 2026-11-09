@@ -18,7 +18,7 @@ export const apps: HubApp[] = [
   {
     code: 'qr',
     title: 'QR Code Generator',
-    description: 'Create clean, downloadable QR codes for links, contact cards, menus, and quick sharing.',
+    description: 'Share links, Wi-Fi access, and contact details with a QR code. Pick a style, add a logo, and download.',
     status: 'live',
     category: 'Utilities',
     href: '/qr-code',
@@ -28,7 +28,7 @@ export const apps: HubApp[] = [
   {
     code: 'words',
     title: 'Word Counter',
-    description: 'Count words and characters instantly, and estimate reading time with a custom WPM setting.',
+    description: 'Check the length of your next article, caption, or email. See word counts and reading time as you type.',
     status: 'live',
     category: 'Productivity',
     href: '/word-counter',
@@ -36,14 +36,24 @@ export const apps: HubApp[] = [
     badge: 'Live now'
   },
   {
+    code: 'xml',
+    title: 'XML Editor',
+    description: 'Edit, validate, and format XML. Spot errors by line, explore the document tree, and download the result.',
+    status: 'live',
+    category: 'Utilities',
+    href: '/xml-editor',
+    eyebrow: 'Data helper',
+    badge: 'Live now'
+  },
+  {
     code: 'text',
     title: 'Text Formatter',
-    description: 'Clean pasted text, fix spacing, and transform content into cleaner output for docs or chat.',
-    status: 'coming-soon',
+    description: 'Change capitalization, tidy spacing, and remove duplicate lines. Preview, copy, or download your text.',
+    status: 'live',
     category: 'Productivity',
-    href: '#',
+    href: '/text-formatter',
     eyebrow: 'Workflow helper',
-    badge: 'Coming soon'
+    badge: 'Live now'
   },
   {
     code: 'notes',

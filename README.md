@@ -6,8 +6,10 @@ The goal of this website is to remove friction from small, repetitive tasks. Use
 
 ## Current Tools
 
-- QR Code Generator: Build branded QR codes with color, shape, size, and optional logo controls.
+- QR Code Generator: Create codes for links/text, Wi-Fi (WPA/WPA2 Personal, WEP, open and hidden networks), email, phone, SMS, and vCard contacts. Choose from nine collapsible style presets, customize colors and logos, and download a PNG. Details stay in the browser; switching QR types preserves each type's fields for the current visit.
 - Word Counter: Count words and characters instantly and estimate reading time with a custom words-per-minute setting.
+- Text Formatter: Change capitalization, clean up whitespace, remove duplicate lines, and copy or download the result. Run its focused tests with `npm run test:text` (Node.js 22.18+).
+- XML Editor: Edit any XML document with line numbers, live well-formedness checks (with error line and column), formatting/minifying, a collapsible document tree, and file open/download. Everything stays in the browser.
 
 ## Product Direction
 
@@ -51,6 +53,16 @@ Preview the production build locally:
 ```bash
 npm run preview
 ```
+
+## QR Content Checks
+
+Run payload and QR rendering tests with Node.js 22.18 or later:
+
+```bash
+npm run test:qr
+```
+
+These cover Wi-Fi escaping, URI encoding, vCard field escaping and line folding, validation, and rendering with the QR library. Camera scanning and SMS message prefilling should also be checked on the intended phones and scanner apps.
 
 ## Notes
 

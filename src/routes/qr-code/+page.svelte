@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import SvgQR from '@svelte-put/qr/svg/QR.svelte';
+  import QrContentForm from '$lib/components/QrContentForm.svelte';
+  import { buildQrContent, createQrContent, qrTypes } from '$lib/qr/content';
   import { resolve } from '$app/paths';
   import { createQrPngDataUrl } from '@svelte-put/qr';
 
@@ -13,6 +14,22 @@
   ] as const;
 
   const presets = [
+    {
+      label: 'App Hub',
+      moduleFill: '#0f172a',
+      anchorOuterFill: '#2563eb',
+      anchorInnerFill: '#1d4ed8',
+      backgroundFill: '#f8fafc',
+      shape: 'square' as const
+    },
+    {
+      label: 'Classic Light',
+      moduleFill: '#000000',
+      anchorOuterFill: '#000000',
+      anchorInnerFill: '#000000',
+      backgroundFill: '#ffffff',
+      shape: 'square' as const
+    },
     {
       label: 'Classic Dark',
       moduleFill: '#ffffff',
@@ -31,30 +48,82 @@
     },
     {
       label: 'Mint Light',
-      moduleFill: '#0f172a',
-      anchorOuterFill: '#0f172a',
-      anchorInnerFill: '#10b981',
-      backgroundFill: '#ecfeff',
+      moduleFill: '#064e3b',
+      anchorOuterFill: '#047857',
+      anchorInnerFill: '#064e3b',
+      backgroundFill: '#ecfdf5',
+      shape: 'square' as const
+    },
+    {
+      label: 'Blueprint',
+      moduleFill: '#1e3a8a',
+      anchorOuterFill: '#1d4ed8',
+      anchorInnerFill: '#1e40af',
+      backgroundFill: '#eff6ff',
+      shape: 'square' as const
+    },
+    {
+      label: 'Forest',
+      moduleFill: '#14532d',
+      anchorOuterFill: '#166534',
+      anchorInnerFill: '#14532d',
+      backgroundFill: '#f0fdf4',
+      shape: 'circle' as const
+    },
+    {
+      label: 'Plum',
+      moduleFill: '#581c87',
+      anchorOuterFill: '#7e22ce',
+      anchorInnerFill: '#581c87',
+      backgroundFill: '#faf5ff',
+      shape: 'circle' as const
+    },
+    {
+      label: 'Warm Ink',
+      moduleFill: '#78350f',
+      anchorOuterFill: '#92400e',
+      anchorInnerFill: '#78350f',
+      backgroundFill: '#fffbeb',
       shape: 'square' as const
     }
   ];
 
-  let logo = $state('https://placehold.co/600x400');
+  const defaultPreset = presets[0];
+
+  let logo = $state('');
   let logoPreview = $state('');
-  let moduleFill = $state('#ffffff');
-  let anchorOuterFill = $state('#ffffff');
-  let anchorInnerFill = $state('#ffffff');
-  let backgroundFill = $state('#000000');
+  let moduleFill = $state(defaultPreset.moduleFill);
+  let anchorOuterFill = $state(defaultPreset.anchorOuterFill);
+  let anchorInnerFill = $state(defaultPreset.anchorInnerFill);
+  let backgroundFill = $state(defaultPreset.backgroundFill);
   let width = $state(500);
   let height = $state(500);
-  let data = $state('https://bry-dev.github.io/communal-app/');
+  let content = $state(createQrContent());
+  const payload = $derived(buildQrContent(content));
+  const data = $derived(payload.data);
+  const contentType = $derived(qrTypes.find((type) => type.value === content.kind)!);
   let withLogo = $state(false);
   let showPreview = $state(false);
   let isWidthErr = $state(false);
   let isHeightErr = $state(false);
   let files: FileList | null = $state(null);
-  let shape: 'circle' | 'square' = $state('circle');
+  let shape: 'circle' | 'square' = $state(defaultPreset.shape);
   let dataURL = $state('');
+  let exportError = $state('');
+  const dimensionError = $derived(
+    !Number.isInteger(width) || !Number.isInteger(height) ||
+    Number(width) < 120 || Number(height) < 120 || Number(width) > 1600 || Number(height) > 1600
+      ? 'Choose a width and height between 120 and 1600 pixels.'
+      : ''
+  );
+
+  const selectedPreset = $derived(presets.find((preset) =>
+    preset.moduleFill === moduleFill &&
+    preset.anchorOuterFill === anchorOuterFill &&
+    preset.anchorInnerFill === anchorInnerFill &&
+    preset.backgroundFill === backgroundFill &&
+    preset.shape === shape
+  ));
 
   $effect(() => {
     isWidthErr = Number(width) > MAX_DIMENSION;
@@ -62,6 +131,10 @@
   });
 
   $effect(() => {
+    dataURL = '';
+    exportError = '';
+    if (!data || dimensionError) return;
+
     const config = {
       data,
       width: Number(width) || 500,
@@ -70,26 +143,23 @@
       backgroundFill,
       anchorInnerFill,
       anchorOuterFill,
+      margin: 4,
       shape,
-      logo: withLogo ? logo : undefined
+      logo: withLogo && logo ? logo : undefined
     };
 
-    createQrPngDataUrl(config).then((response) => {
-      dataURL = response;
-    });
-  });
-
-  onMount(async () => {
-    dataURL = await createQrPngDataUrl({
-      data,
-      width: 500,
-      height: 500,
-      backgroundFill,
-      moduleFill,
-      anchorInnerFill,
-      anchorOuterFill,
-      shape
-    });
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      createQrPngDataUrl(config).then((response) => {
+        if (!cancelled) dataURL = response;
+      }).catch(() => {
+        if (!cancelled) exportError = 'Could not prepare the PNG. Try a smaller size or remove the logo.';
+      });
+    }, 180);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   });
 
   function applyPreset(preset: (typeof presets)[number]) {
@@ -123,7 +193,7 @@
 
   function removeLogo() {
     files = new DataTransfer().files;
-    logo = 'https://placehold.co/600x400';
+    logo = '';
     logoPreview = '';
     showPreview = false;
     withLogo = false;
@@ -134,93 +204,88 @@
   <title>QR Code Generator | App Hub</title>
   <meta
     name="description"
-    content="Generate and customize QR codes with color, shape, size, and logo controls."
+    content="Create QR codes for links, Wi-Fi, email, phone, SMS, and contact cards. Customize colors and download a PNG."
   />
 </svelte:head>
 
-<section class="relative overflow-hidden bg-slate-950 text-white">
-  <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.16),_transparent_28%),radial-gradient(circle_at_85%_15%,_rgba(139,92,246,0.18),_transparent_24%),linear-gradient(to_bottom,_rgba(15,23,42,0.98),_rgba(2,6,23,1))]"></div>
-  <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(circle_at_center,black,transparent_80%)]"></div>
+<section class="bg-canvas text-ink">
 
-  <div class="relative mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
+  <div class="page-width py-8 sm:py-12">
     <div class="mb-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
       <div class="max-w-3xl space-y-4">
         <a
-          href={resolve('/')}
-          class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 backdrop-blur transition hover:bg-white/10"
+          href={resolve('/') + '#apps'}
+          class="quiet-link inline-flex min-h-11 items-center text-sm"
         >
           ← Back to App Hub
         </a>
 
         <div class="space-y-3">
-          <p class="text-xs font-semibold uppercase tracking-[0.28em] text-sky-300 sm:text-sm">Live utility</p>
-          <h1 class="text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
+          <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
             QR Code Generator
           </h1>
-          <p class="max-w-2xl text-xs leading-6 text-slate-300 sm:text-sm lg:text-base">
-            Create a branded QR code with custom colors, shape, size, and an optional logo.
+          <p class="max-w-2xl text-sm leading-6 text-muted sm:text-sm lg:text-base">
+            Share a link, connect guests to Wi-Fi, or create a contact card. Make it yours and download a PNG.
           </p>
         </div>
       </div>
 
-      <div class="flex flex-wrap gap-3 text-xs text-slate-200 sm:text-sm">
-        <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2">PNG download</span>
-        <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2">Logo support</span>
-        <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2">Live preview</span>
-      </div>
     </div>
 
-    <div class="grid gap-8 xl:grid-cols-[1.05fr_0.95fr] xl:items-start">
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-start">
       <div class="space-y-6">
-        <div class="rounded-[2rem] border border-white/10 bg-slate-900/70 p-6 shadow-2xl shadow-slate-950/20 backdrop-blur-xl sm:p-8">
-          <div class="mb-6 flex items-center justify-between gap-4">
+        <div class="rounded-2xl border border-line bg-surface p-6 sm:p-8">
+          <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
             <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-300 sm:text-sm">Customize</p>
-              <h2 class="mt-2 text-xl font-semibold text-white sm:text-2xl">Build your QR code</h2>
+              <p class="text-sm font-semibold text-accent sm:text-sm">Customize</p>
+              <h2 class="mt-2 text-xl font-semibold text-ink sm:text-2xl">Build your QR code</h2>
             </div>
-            <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-right">
-              <p class="text-xs uppercase tracking-[0.22em] text-slate-400">Canvas</p>
-              <p class="mt-1 text-base font-semibold text-white sm:text-lg">{width} × {height}</p>
+            <div class="rounded-2xl border border-line bg-soft px-4 py-3 text-right">
+              <p class="text-sm text-muted">Canvas</p>
+              <p class="mt-1 text-base font-semibold text-ink sm:text-lg">{width} × {height}</p>
             </div>
           </div>
 
           <div class="space-y-8">
-            <div class="space-y-3">
-              <label for="text-convert" class="block text-xs font-medium text-slate-200 sm:text-sm">Text or URL</label>
-              <textarea
-                id="text-convert"
-                bind:value={data}
-                rows="4"
-                class="block w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:border-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/20 sm:text-sm"
-                placeholder="Paste a URL, text, or contact info"
-              ></textarea>
-              <p class="text-xs text-slate-400 sm:text-sm">Best for links, Wi-Fi credentials, profile URLs, menus, and event signage.</p>
-            </div>
+            <QrContentForm bind:content error={payload.error} />
 
-            <div class="space-y-4">
-              <div class="flex items-center justify-between gap-4">
-                <h3 class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-300 sm:text-sm">Quick presets</h3>
-                <p class="text-xs text-slate-500">One tap theme</p>
-              </div>
-              <div class="flex flex-wrap gap-3">
+            <details class="preset-picker rounded-xl border border-line">
+              <summary id="preset-heading" class="flex min-h-14 cursor-pointer list-none flex-wrap items-center justify-between gap-2 rounded-xl px-4 py-3 text-sm [&::-webkit-details-marker]:hidden">
+                <span class="font-semibold">Quick presets</span>
+                <span class="flex items-center gap-2 text-muted">
+                  {selectedPreset?.label ?? 'Custom colors'}
+                  <svg class="preset-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                </span>
+              </summary>
+              <div class="grid grid-cols-2 gap-3 px-4 pb-4" role="group" aria-labelledby="preset-heading">
                 {#each presets as preset}
                   <button
                     type="button"
                     onclick={() => applyPreset(preset)}
-                    class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium text-slate-200 transition hover:border-white/20 hover:bg-white/10 sm:text-sm"
+                    aria-pressed={selectedPreset === preset}
+                    class="preset-button"
                   >
-                    {preset.label}
+                    <svg class="preset-swatch" width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+                      <rect x="0.5" y="0.5" width="35" height="35" rx="6" fill={preset.backgroundFill} stroke="var(--line)" />
+                      <path d="M6 6h9v9H6zm15 0h9v9h-9zM6 21h9v9H6z" stroke={preset.anchorOuterFill} stroke-width="2" />
+                      <path d="M9 9h3v3H9zm15 0h3v3h-3zM9 24h3v3H9z" fill={preset.anchorInnerFill} />
+                      <path d="M21 21h4v4h-4zm5 5h4v4h-4zm-5 0h3v4h-3zm6-5h3v3h-3z" fill={preset.moduleFill} />
+                    </svg>
+                    <span class="min-w-0">
+                      <span class="block text-sm font-medium">{preset.label}</span>
+                      <span class="block text-xs text-muted">{preset === defaultPreset ? 'Default' : preset.shape === 'circle' ? 'Round dots' : 'Square dots'}</span>
+                    </span>
                   </button>
                 {/each}
               </div>
-            </div>
+            </details>
 
             <div class="grid gap-5 sm:grid-cols-2">
               <div class="space-y-2">
-                <label for="height" class="flex items-center gap-2 text-xs font-medium text-slate-200 sm:text-sm">
+                <label for="height" class="flex items-center gap-2 text-sm font-medium text-ink sm:text-sm">
                   Height
                   {#if isHeightErr}
-                    <span class="rounded-full bg-amber-400/10 px-2.5 py-1 text-xs font-semibold text-amber-200">
+                    <span class="rounded-lg bg-warning-soft px-2.5 py-1 text-sm font-semibold text-warning">
                       Large file
                     </span>
                   {/if}
@@ -231,15 +296,15 @@
                   min="120"
                   max="1600"
                   bind:value={height}
-                  class="block w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/20"
+                  class="block w-full rounded-2xl border border-line bg-surface px-4 py-3 text-sm text-ink focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               </div>
 
               <div class="space-y-2">
-                <label for="width" class="flex items-center gap-2 text-xs font-medium text-slate-200 sm:text-sm">
+                <label for="width" class="flex items-center gap-2 text-sm font-medium text-ink sm:text-sm">
                   Width
                   {#if isWidthErr}
-                    <span class="rounded-full bg-amber-400/10 px-2.5 py-1 text-xs font-semibold text-amber-200">
+                    <span class="rounded-lg bg-warning-soft px-2.5 py-1 text-sm font-semibold text-warning">
                       Large file
                     </span>
                   {/if}
@@ -250,54 +315,54 @@
                   min="120"
                   max="1600"
                   bind:value={width}
-                  class="block w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/20"
+                  class="block w-full rounded-2xl border border-line bg-surface px-4 py-3 text-sm text-ink focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               </div>
             </div>
 
-            <div class="grid gap-4 sm:grid-cols-2">
-              <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-                <label for="background-color" class="mb-3 block text-xs font-medium text-slate-200 sm:text-sm">Background</label>
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              <div class="rounded-xl border border-line bg-soft p-4">
+                <label for="background-color" class="mb-3 block text-sm font-medium text-ink sm:text-sm">Background</label>
                 <div class="flex items-center gap-3">
-                  <input id="background-color" type="color" bind:value={backgroundFill} class="p-1 h-12 w-16 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-                  <span class="rounded-full border border-white/10 bg-slate-950/70 px-3 py-1.5 text-xs font-medium text-slate-300">{backgroundFill}</span>
+                  <input id="background-color" type="color" bind:value={backgroundFill} class="p-1 h-12 w-16 cursor-pointer rounded-xl border border-line bg-transparent" />
+                  <span class="rounded-lg border border-line bg-surface px-3 py-1.5 text-sm font-medium text-muted">{backgroundFill}</span>
                 </div>
               </div>
 
-              <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-                <label for="module-color" class="mb-3 block text-xs font-medium text-slate-200 sm:text-sm">Module</label>
+              <div class="rounded-xl border border-line bg-soft p-4">
+                <label for="module-color" class="mb-3 block text-sm font-medium text-ink sm:text-sm">QR pattern</label>
                 <div class="flex items-center gap-3">
-                  <input id="module-color" type="color" bind:value={moduleFill} class="p-1 h-12 w-16 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-                  <span class="rounded-full border border-white/10 bg-slate-950/70 px-3 py-1.5 text-xs font-medium text-slate-300">{moduleFill}</span>
+                  <input id="module-color" type="color" bind:value={moduleFill} class="p-1 h-12 w-16 cursor-pointer rounded-xl border border-line bg-transparent" />
+                  <span class="rounded-lg border border-line bg-surface px-3 py-1.5 text-sm font-medium text-muted">{moduleFill}</span>
                 </div>
               </div>
 
-              <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-                <label for="anchor-inner-color" class="mb-3 block text-xs font-medium text-slate-200 sm:text-sm">Inner anchor</label>
+              <div class="rounded-xl border border-line bg-soft p-4">
+                <label for="anchor-inner-color" class="mb-3 block text-sm font-medium text-ink sm:text-sm">Inner corners</label>
                 <div class="flex items-center gap-3">
-                  <input id="anchor-inner-color" type="color" bind:value={anchorInnerFill} class="p-1 h-12 w-16 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-                  <span class="rounded-full border border-white/10 bg-slate-950/70 px-3 py-1.5 text-xs font-medium text-slate-300">{anchorInnerFill}</span>
+                  <input id="anchor-inner-color" type="color" bind:value={anchorInnerFill} class="p-1 h-12 w-16 cursor-pointer rounded-xl border border-line bg-transparent" />
+                  <span class="rounded-lg border border-line bg-surface px-3 py-1.5 text-sm font-medium text-muted">{anchorInnerFill}</span>
                 </div>
               </div>
 
-              <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-                <label for="anchor-outer-color" class="mb-3 block text-xs font-medium text-slate-200 sm:text-sm">Outer anchor</label>
+              <div class="rounded-xl border border-line bg-soft p-4">
+                <label for="anchor-outer-color" class="mb-3 block text-sm font-medium text-ink sm:text-sm">Outer corners</label>
                 <div class="flex items-center gap-3">
-                  <input id="anchor-outer-color" type="color" bind:value={anchorOuterFill} class="p-1 h-12 w-16 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-                  <span class="rounded-full border border-white/10 bg-slate-950/70 px-3 py-1.5 text-xs font-medium text-slate-300">{anchorOuterFill}</span>
+                  <input id="anchor-outer-color" type="color" bind:value={anchorOuterFill} class="p-1 h-12 w-16 cursor-pointer rounded-xl border border-line bg-transparent" />
+                  <span class="rounded-lg border border-line bg-surface px-3 py-1.5 text-sm font-medium text-muted">{anchorOuterFill}</span>
                 </div>
               </div>
             </div>
 
             <div class="space-y-3">
-              <h3 class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-300 sm:text-sm">Shape</h3>
-              <div class="inline-flex rounded-full border border-white/10 bg-white/5 p-1">
+              <h3 class="text-sm font-semibold text-muted sm:text-sm">Shape</h3>
+              <div class="inline-flex rounded-lg border border-line bg-soft p-1">
                 {#each shapeOptions as option}
                   <label class="cursor-pointer">
                     <input type="radio" class="sr-only" name="shape" value={option.value} bind:group={shape} />
                     <span
                       class:selected-pill={shape === option.value}
-                      class="inline-flex rounded-full px-4 py-2 text-xs font-medium text-slate-300 transition sm:text-sm"
+                      class="inline-flex rounded-lg px-4 py-2 text-sm font-medium text-muted transition sm:text-sm"
                     >
                       {option.label}
                     </span>
@@ -306,46 +371,47 @@
               </div>
             </div>
 
-            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+            <div class="rounded-xl border border-line bg-soft p-5">
               <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h3 class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-300 sm:text-sm">Logo overlay</h3>
-                  <p class="mt-2 text-xs leading-6 text-slate-400 sm:text-sm">
+                  <h3 class="text-sm font-semibold text-muted sm:text-sm">Add a logo</h3>
+                  <p class="mt-2 text-sm leading-6 text-muted sm:text-sm">
                     Add a PNG or JPG logo in the center for branded sharing.
                   </p>
                 </div>
 
                 <label class="inline-flex cursor-pointer items-center gap-3">
-                  <span class="text-xs font-medium text-slate-200 sm:text-sm">Enable</span>
-                  <input type="checkbox" bind:checked={withLogo} class="h-5 w-5 rounded border-white/20 bg-slate-950/70 text-sky-400 focus:ring-sky-400/30" />
+                  <span class="text-sm font-medium text-ink sm:text-sm">Enable</span>
+                  <input type="checkbox" bind:checked={withLogo} class="h-5 w-5 rounded border-line bg-surface text-accent focus:ring-accent" />
                 </label>
               </div>
 
               {#if withLogo}
                 <div class="mt-5 space-y-4">
                   <input
+                    aria-label="Choose a logo image"
                     id="add-icon"
                     accept="image/jpeg, image/png, image/gif"
                     type="file"
                     bind:files
                     onchange={loadIcon}
-                    class="block w-full rounded-2xl border border-dashed border-white/15 bg-slate-950/60 px-4 py-3 text-xs text-slate-300 file:mr-4 file:rounded-full file:border-0 file:bg-white file:px-4 file:py-2 file:text-xs file:font-semibold file:text-slate-950 hover:file:bg-sky-100 sm:text-sm sm:file:text-sm"
+                    class="block w-full rounded-2xl border border-dashed border-line bg-surface px-4 py-3 text-sm text-muted file:mr-4 file:rounded-lg file:border-0 file:bg-accent file:px-4 file:py-2 file:text-sm file:font-semibold file:text-on-accent hover:file:opacity-90 sm:text-sm sm:file:text-sm"
                   />
 
                   {#if showPreview}
-                    <div class="flex flex-col gap-4 rounded-2xl border border-white/10 bg-slate-950/60 p-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
                       <div class="flex items-center gap-4">
-                        <img src={logoPreview} alt="Logo preview" class="h-16 w-16 rounded-2xl object-cover ring-1 ring-white/10" />
+                        <img src={logoPreview} alt="Logo preview" class="h-16 w-16 rounded-2xl object-cover ring-1 ring-line" />
                         <div>
-                          <p class="text-xs font-medium text-white sm:text-sm">Logo preview ready</p>
-                          <p class="text-xs text-slate-400 sm:text-sm">Centered inside the QR code.</p>
+                          <p class="text-sm font-medium text-ink sm:text-sm">Logo preview ready</p>
+                          <p class="text-sm text-muted sm:text-sm">Centered inside the QR code.</p>
                         </div>
                       </div>
 
                       <button
                         type="button"
                         onclick={removeLogo}
-                        class="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium text-slate-200 transition hover:bg-white/10 sm:text-sm"
+                        class="inline-flex items-center justify-center rounded-lg border border-line bg-soft px-4 py-2 text-sm font-medium text-ink transition hover:bg-soft sm:text-sm"
                       >
                         Remove logo
                       </button>
@@ -358,61 +424,76 @@
         </div>
       </div>
 
-      <div class="xl:sticky xl:top-24">
-        <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-slate-900/75 shadow-2xl shadow-slate-950/30 backdrop-blur-xl">
-          <div class="border-b border-white/10 px-6 py-5 sm:px-8">
+      <div class="lg:sticky lg:top-24">
+        <div class="overflow-hidden rounded-2xl border border-line bg-surface">
+          <div class="border-b border-line px-6 py-5 sm:px-8">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-300 sm:text-sm">Preview</p>
-                <h2 class="mt-2 text-xl font-semibold text-white sm:text-2xl">Ready to export</h2>
+                <p class="text-sm font-semibold text-accent sm:text-sm">Preview</p>
+                <h2 class="mt-2 text-xl font-semibold text-ink sm:text-2xl">{data ? 'Your QR code' : 'Add your details'}</h2>
               </div>
-              <a
-                href={dataURL}
-                download="qr.png"
-                class="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-xs font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:shadow-xl sm:text-sm"
-              >
-                Download PNG
-              </a>
+              {#if dataURL && data && !dimensionError}
+                <a
+                  href={dataURL}
+                  download={`qr-${content.kind}.png`}
+                  class="button"
+                >
+                  Download PNG
+                </a>
+              {:else}
+                <button type="button" disabled class="button cursor-not-allowed opacity-50">{data && !dimensionError && !exportError ? 'Preparing PNG...' : 'Download PNG'}</button>
+              {/if}
             </div>
           </div>
 
           <div class="space-y-6 p-6 sm:p-8">
-            <div class="rounded-[1.75rem] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(125,211,252,0.12),_transparent_35%),rgba(2,6,23,0.9)] p-6 sm:p-8">
-              <div class="flex min-h-[360px] items-center justify-center rounded-[1.5rem] border border-dashed border-white/10 bg-slate-950/60 p-4">
-                <SvgQR
-                  style="background-color: {backgroundFill};"
-                  class="h-full max-h-[340px] w-full max-w-[340px] rounded-2xl"
-                  {data}
-                  {shape}
-                  {moduleFill}
-                  {anchorOuterFill}
-                  {anchorInnerFill}
-                  logo={withLogo ? logo : undefined}
-                />
+            <div class="rounded-xl bg-soft p-3 sm:p-4">
+              <div class="flex items-center justify-center p-2">
+                {#if data}
+                  <SvgQR
+                    style="background-color: {backgroundFill};"
+                    class="aspect-square h-auto w-full max-w-[340px]"
+                    {data}
+                    margin={4}
+                    {shape}
+                    {moduleFill}
+                    {anchorOuterFill}
+                    {anchorInnerFill}
+                    logo={withLogo && logo ? logo : undefined}
+                    role="img"
+                    aria-label={`${contentType.label} QR code`}
+                  />
+                {:else}
+                  <div class="flex aspect-square w-full max-w-[340px] items-center justify-center px-5 text-center text-sm text-muted">{payload.error}</div>
+                {/if}
               </div>
             </div>
+
+            {#if dimensionError || exportError}
+              <p class="rounded-lg bg-warning-soft px-4 py-3 text-sm text-warning" role="status">{dimensionError || exportError}</p>
+            {/if}
 
             <div class="grid gap-3 sm:grid-cols-3">
-              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p class="text-xs uppercase tracking-[0.22em] text-slate-500">Shape</p>
-                <p class="mt-2 text-xs font-medium text-white sm:text-sm">{shape}</p>
+              <div class="rounded-2xl border border-line bg-soft p-4">
+                <p class="text-sm text-muted">Shape</p>
+                <p class="mt-2 text-sm font-medium text-ink sm:text-sm">{shape}</p>
               </div>
-              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p class="text-xs uppercase tracking-[0.22em] text-slate-500">Logo</p>
-                <p class="mt-2 text-xs font-medium text-white sm:text-sm">{withLogo ? 'Enabled' : 'None'}</p>
+              <div class="rounded-2xl border border-line bg-soft p-4">
+                <p class="text-sm text-muted">Logo</p>
+                <p class="mt-2 text-sm font-medium text-ink sm:text-sm">{withLogo ? 'Enabled' : 'None'}</p>
               </div>
-              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p class="text-xs uppercase tracking-[0.22em] text-slate-500">Text length</p>
-                <p class="mt-2 text-xs font-medium text-white sm:text-sm">{data.length} chars</p>
+              <div class="rounded-2xl border border-line bg-soft p-4">
+                <p class="text-sm text-muted">Content</p>
+                <p class="mt-2 text-sm font-medium text-ink sm:text-sm">{contentType.label}</p>
               </div>
             </div>
 
-            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
-              <h3 class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-300 sm:text-sm">Helpful notes</h3>
-              <ul class="mt-4 space-y-3 text-xs leading-6 text-slate-300 sm:text-sm">
-                <li>• Keep height and width balanced for a crisp square export.</li>
-                <li>• Larger than 1000px still works, but the resulting PNG will be heavier.</li>
-                <li>• High contrast between background and module colors improves scan reliability.</li>
+            <div class="rounded-xl border border-line bg-soft p-5">
+              <h3 class="text-sm font-semibold text-muted sm:text-sm">Helpful notes</h3>
+              <ul class="mt-4 list-disc space-y-3 pl-4 text-sm leading-6 text-muted">
+                <li>Keep height and width balanced for a crisp square export.</li>
+                <li>Larger than 1000px still works, but the resulting PNG will be heavier.</li>
+                <li>High contrast between background and module colors improves scan reliability.</li>
               </ul>
             </div>
           </div>
@@ -423,9 +504,31 @@
 </section>
 
 <style>
+  .preset-picker summary:hover { background: var(--soft); }
+  .preset-chevron { transition: transform 160ms; }
+  .preset-picker[open] .preset-chevron { transform: rotate(180deg); }
+  .preset-button {
+    display: flex;
+    min-height: 64px;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--ink);
+    text-align: left;
+    transition: border-color 160ms, background 160ms, box-shadow 160ms;
+  }
+  .preset-button:hover { border-color: var(--accent); background: var(--soft); }
+  .preset-button[aria-pressed='true'] { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+  .preset-swatch { flex-shrink: 0; }
+  @media (max-width: 379px) {
+    .preset-button { flex-direction: column; align-items: flex-start; }
+  }
   .selected-pill {
-    background: rgba(255, 255, 255, 0.95);
-    color: rgb(2, 6, 23);
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+    background: var(--accent);
+    color: var(--on-accent);
+
   }
 </style>

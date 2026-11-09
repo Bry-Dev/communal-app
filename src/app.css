@@ -2,52 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face { font-family: 'Montserrat'; src: url('./lib/assets/fonts/Montserrat-Medium.ttf') format('truetype'); font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Montserrat'; src: url('./lib/assets/fonts/Montserrat-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 
 @layer base {
-  input[type="number"]::-webkit-outer-spin-button,
-  input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  :root {
+    color-scheme: light;
+    --canvas: #f8fafc; --surface: #ffffff; --soft: #f1f5f9;
+    --ink: #0f172a; --muted: #475569; --line: #cbd5e1;
+    --accent: #2563eb; --accent-hover: #1d4ed8; --accent-soft: #eff6ff; --on-accent: #ffffff;
+    --button-bg: #2563eb; --button-hover: #1d4ed8;
+    --warning: #835c16; --warning-soft: #faf1da;
+    --shadow: rgba(15, 23, 42, 0.08);
+    --secondary: #475569; --secondary-soft: #f1f5f9;
   }
-  input[type="number"] {
-    -moz-appearance: textfield;
-    appearance: textfield;
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+    --canvas: #020617; --surface: #0f172a; --soft: #1e293b;
+    --ink: #f8fafc; --muted: #94a3b8; --line: #334155;
+    --accent: #60a5fa; --accent-hover: #93c5fd; --accent-soft: #172554; --on-accent: #020617;
+    --button-bg: #3b82f6; --button-hover: #60a5fa;
+    --warning: #e8ca88; --warning-soft: #423923;
+    --shadow: rgba(0, 0, 0, 0.22);
+    --secondary: #cbd5e1; --secondary-soft: #1e293b;
+  }
+  html { scroll-behavior: smooth; scroll-padding-top: 140px; }
+  body { margin: 0; background: var(--canvas); color: var(--ink); font-family: 'Segoe UI', sans-serif; font-size: 16px; line-height: 1.6; }
+  h1, h2, h3, .brand { font-family: 'Montserrat', 'Segoe UI', sans-serif; }
+  h1, h2, h3 { line-height: 1.25; text-wrap: balance; }
+  button, input, textarea, select { font: inherit; }
+  button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+  ::selection { background: var(--accent); color: var(--on-accent); }
+  input, textarea, select { accent-color: var(--accent); }
+  textarea { resize: vertical; }
+  input[type='radio']:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
   }
 }
-
-@font-face {
-  font-family: montserrat-light;
-  src: url("/src/lib/assets/fonts/Montserrat-Light.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: montserrat-regular;
-  src: url("/src/lib/assets/fonts/Montserrat-Regular.ttf") format("truetype");
-}
- 
-@font-face {
-  font-family: montserrat-medium;
-  src: url("/src/lib/assets/fonts/Montserrat-Medium.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: montserrat-bold;
-  src: url("/src/lib/assets/fonts/Montserrat-Bold.ttf") format("truetype");
-}
-
-.logo {
-  background: rgb(10,67,103);
-  background: linear-gradient(90deg, #62BEC1 0%, #5AD2F4 90%);
-  color:transparent;
-  background-clip: text;
-  
-}
-
-body {
-  background: #0a4367;
-  margin: 0;
-  box-sizing: border-box;
-  padding: 0;
-  /* background-image: linear-gradient(rgba(255, 255, 255, .2) .02em, transparent .1em), linear-gradient(90deg, rgba(255, 255, 255, .2) .02em, transparent .1em);
-  background-size: 3em 3em; */
+@layer components {
+  .page-width { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
+  .button { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold; background: var(--button-bg); color: var(--on-accent); transition: background 160ms, box-shadow 160ms; }
+  .button:hover { background: var(--button-hover); box-shadow: 0 3px 10px var(--shadow); }
+  .button-secondary { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+  .button-secondary:hover { background: var(--soft); }
+  .quiet-link { color: var(--muted); text-underline-offset: 4px; }
+  .quiet-link:hover { color: var(--accent); text-decoration: underline; }
+  .field { @apply w-full rounded-lg border border-line bg-surface px-4 py-3 text-ink; transition: border-color 160ms, box-shadow 160ms; }
+  .field:hover { border-color: var(--muted); }
+  .field:focus { border-color: var(--accent); }
+  .field::placeholder { color: var(--muted); opacity: 1; }
+  .skip-link { @apply fixed left-4 top-4 z-[100] -translate-y-24 rounded-lg px-5 py-3; background: var(--accent); color: var(--on-accent); }
+  .skip-link:focus { transform: translateY(0); }
 }
