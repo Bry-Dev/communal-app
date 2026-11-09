@@ -95,7 +95,7 @@
     </div>
   {/if}
 
-  <p class="text-xs leading-6 text-muted" role="status">{error || 'Created in your browser. Your details are not saved or uploaded.'}</p>
+  <p class="min-h-6 text-xs leading-6 text-muted" role="status">{error}</p>
 </div>
 
 <style>

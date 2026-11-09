@@ -2,39 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face { font-family: 'Montserrat'; src: url('./lib/assets/fonts/Montserrat-Medium.ttf') format('truetype'); font-weight: 500; font-display: swap; }
-@font-face { font-family: 'Montserrat'; src: url('./lib/assets/fonts/Montserrat-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
-
 @layer base {
   :root {
     color-scheme: light;
-    --canvas: #f8fafc; --surface: #ffffff; --soft: #f1f5f9;
-    --ink: #0f172a; --muted: #475569; --line: #cbd5e1;
-    --accent: #2563eb; --accent-hover: #1d4ed8; --accent-soft: #eff6ff; --on-accent: #ffffff;
-    --button-bg: #2563eb; --button-hover: #1d4ed8;
+    --canvas: #f6f3ec; --surface: #fffdf8; --soft: #efeadf;
+    --ink: #1c1a17; --muted: #6b645a; --line: #ddd5c7;
+    --brand: #c2410c; --brand-soft: #fdeee4;
+    --accent: var(--brand); --accent-soft: var(--brand-soft); --on-accent: #ffffff;
     --warning: #835c16; --warning-soft: #faf1da;
-    --shadow: rgba(15, 23, 42, 0.08);
-    --secondary: #475569; --secondary-soft: #f1f5f9;
+    --shadow: rgba(60, 45, 20, 0.09);
+    --secondary: #6b645a; --secondary-soft: #efeadf;
+    /* One colour per tool, like coloured index tabs. */
+    --tone-qr: #2f7d4f; --tone-qr-soft: #e3f1e7;
+    --tone-words: #c2410c; --tone-words-soft: #fdeee4;
+    --tone-xml: #6d4bc4; --tone-xml-soft: #ece6fa;
+    --tone-text: #0f766e; --tone-text-soft: #dcf1ee;
+    --tone-password: #be185d; --tone-password-soft: #fce7f1;
+    --tone-date: #1d4ed8; --tone-date-soft: #e3ebfd;
+    --tone-percent: #a16207; --tone-percent-soft: #fbf0d0;
+    --tone-plain: #6b645a; --tone-plain-soft: #efeadf;
   }
   :root[data-theme='dark'] {
     color-scheme: dark;
-    --canvas: #020617; --surface: #0f172a; --soft: #1e293b;
-    --ink: #f8fafc; --muted: #94a3b8; --line: #334155;
-    --accent: #60a5fa; --accent-hover: #93c5fd; --accent-soft: #172554; --on-accent: #020617;
-    --button-bg: #3b82f6; --button-hover: #60a5fa;
+    --canvas: #171513; --surface: #211e1b; --soft: #2b2724;
+    --ink: #f3eee6; --muted: #a69d90; --line: #3a3530;
+    --brand: #fb8a4c; --brand-soft: #3a2418; --on-accent: #1c1a17;
     --warning: #e8ca88; --warning-soft: #423923;
-    --shadow: rgba(0, 0, 0, 0.22);
-    --secondary: #cbd5e1; --secondary-soft: #1e293b;
+    --shadow: rgba(0, 0, 0, 0.3);
+    --secondary: #cfc6b8; --secondary-soft: #2b2724;
+    --tone-qr: #6fcf97; --tone-qr-soft: #1d3326;
+    --tone-words: #fb8a4c; --tone-words-soft: #3a2418;
+    --tone-xml: #b39cf5; --tone-xml-soft: #2a2240;
+    --tone-text: #5ccfc2; --tone-text-soft: #16302d;
+    --tone-password: #f472b6; --tone-password-soft: #3a1a2a;
+    --tone-date: #7aa2f7; --tone-date-soft: #1b2540;
+    --tone-percent: #facc15; --tone-percent-soft: #3a3015;
+    --tone-plain: #a69d90; --tone-plain-soft: #2b2724;
   }
-  html { scroll-behavior: smooth; scroll-padding-top: 140px; }
-  body { margin: 0; background: var(--canvas); color: var(--ink); font-family: 'Segoe UI', sans-serif; font-size: 16px; line-height: 1.6; }
-  h1, h2, h3, .brand { font-family: 'Montserrat', 'Segoe UI', sans-serif; }
-  h1, h2, h3 { line-height: 1.25; text-wrap: balance; }
+  html { scroll-behavior: smooth; scroll-padding-top: 110px; }
+  body { margin: 0; background: var(--canvas); color: var(--ink); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 16px; line-height: 1.6; }
+  h1, h2, h3, .brand { font-family: 'Bricolage Grotesque Variable', 'Segoe UI', sans-serif; letter-spacing: -0.01em; }
+  h1, h2, h3 { line-height: 1.2; text-wrap: balance; }
   button, input, textarea, select { font: inherit; }
   button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
   ::selection { background: var(--accent); color: var(--on-accent); }
   input, textarea, select { accent-color: var(--accent); }
+  input[type='date']::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.7; }
   textarea { resize: vertical; }
   input[type='radio']:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 3px; }
   @media (prefers-reduced-motion: reduce) {
@@ -43,9 +57,21 @@
   }
 }
 @layer components {
-  .page-width { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
-  .button { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold; background: var(--button-bg); color: var(--on-accent); transition: background 160ms, box-shadow 160ms; }
-  .button:hover { background: var(--button-hover); box-shadow: 0 3px 10px var(--shadow); }
+  /* A tone scopes the accent to one tool, so every button and highlight inside picks up its colour. */
+  .tone-qr { --accent: var(--tone-qr); --accent-soft: var(--tone-qr-soft); }
+  .tone-words { --accent: var(--tone-words); --accent-soft: var(--tone-words-soft); }
+  .tone-xml { --accent: var(--tone-xml); --accent-soft: var(--tone-xml-soft); }
+  .tone-text { --accent: var(--tone-text); --accent-soft: var(--tone-text-soft); }
+  .tone-password { --accent: var(--tone-password); --accent-soft: var(--tone-password-soft); }
+  .tone-date { --accent: var(--tone-date); --accent-soft: var(--tone-date-soft); }
+  .tone-percent { --accent: var(--tone-percent); --accent-soft: var(--tone-percent-soft); }
+  .tone-plain { --accent: var(--tone-plain); --accent-soft: var(--tone-plain-soft); }
+
+  .page-width { @apply mx-auto w-full max-w-6xl px-4 sm:px-8; }
+  .button { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold; background: var(--accent); color: var(--on-accent); transition: background 160ms, box-shadow 160ms, transform 160ms; }
+  .button:hover { background: color-mix(in srgb, var(--accent) 85%, var(--ink)); box-shadow: 0 3px 10px var(--shadow); }
+  .button:active { transform: translateY(1px); }
+  .button:disabled { cursor: not-allowed; opacity: 0.45; box-shadow: none; }
   .button-secondary { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
   .button-secondary:hover { background: var(--soft); }
   .quiet-link { color: var(--muted); text-underline-offset: 4px; }
@@ -54,6 +80,9 @@
   .field:hover { border-color: var(--muted); }
   .field:focus { border-color: var(--accent); }
   .field::placeholder { color: var(--muted); opacity: 1; }
+  .num { font-family: 'JetBrains Mono Variable', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .kbd { @apply inline-flex items-center gap-0.5 rounded border border-line px-1.5 text-[11px] font-medium leading-5 text-muted; font-family: 'JetBrains Mono Variable', ui-monospace, monospace; background: var(--canvas); box-shadow: inset 0 -1px 0 var(--line); }
+  .panel { @apply rounded-2xl border border-line bg-surface; }
   .skip-link { @apply fixed left-4 top-4 z-[100] -translate-y-24 rounded-lg px-5 py-3; background: var(--accent); color: var(--on-accent); }
   .skip-link:focus { transform: translateY(0); }
 }

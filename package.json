@@ -12,9 +12,13 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"test:qr": "node --test tests/qr-content.test.mjs",
 		"test:text": "node --test tests/text-format.test.mjs",
+		"test:password": "node --test tests/password.test.mjs",
+		"test": "node --test tests/*.test.mjs",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
+		"@fontsource-variable/bricolage-grotesque": "^5.3.0",
+		"@fontsource-variable/jetbrains-mono": "^5.3.0",
 		"@svelte-put/qr": "^2.1.0",
 		"@sveltejs/adapter-auto": "^4.0.0",
 		"@sveltejs/adapter-static": "^3.0.8",

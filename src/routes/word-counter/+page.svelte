@@ -1,10 +1,23 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import { onMount } from 'svelte';
+	import StatusBar from '$lib/components/StatusBar.svelte';
+	import ToolHeader from '$lib/components/ToolHeader.svelte';
+	import { receiveText, sendText } from '$lib/handoff';
 
 	const DEFAULT_WORDS_PER_MINUTE = 200;
+	const EXAMPLE = `Thanks so much for coming to the garden party on Saturday! It was lovely to see everyone, and the lemon cake disappeared in record time.
+
+We'll do it again in spring. Bring a chair, bring a friend, and bring your appetite.`;
 
 	let text = $state('');
 	let wordsPerMinute = $state(DEFAULT_WORDS_PER_MINUTE);
+
+	onMount(() => {
+		const sent = receiveText('words');
+		if (sent !== undefined) text = sent;
+	});
 
 	function countWords(value: string): number {
 		const normalized = value.trim();
@@ -13,22 +26,27 @@
 	}
 
 	function estimateReadingTime(wordCount: number, wpm: number): string {
-		if (wordCount <= 0) return '0 sec';
+		if (wordCount <= 0) return '0s';
 
 		const safeWpm = wpm > 0 ? wpm : DEFAULT_WORDS_PER_MINUTE;
 		const totalSeconds = Math.ceil((wordCount / safeWpm) * 60);
 		const minutes = Math.floor(totalSeconds / 60);
 		const seconds = totalSeconds % 60;
 
-		if (minutes === 0) return `${seconds} sec`;
-		if (seconds === 0) return `${minutes} min`;
-		return `${minutes} min ${seconds} sec`;
+		if (minutes === 0) return `${seconds}s`;
+		if (seconds === 0) return `${minutes}m`;
+		return `${minutes}m ${seconds}s`;
 	}
 
 	const words = $derived(countWords(text));
 	const characters = $derived(text.length);
 	const charactersNoSpaces = $derived(text.replace(/\s/g, '').length);
 	const readingTime = $derived(estimateReadingTime(words, Number(wordsPerMinute)));
+
+	function tidyInFormatter() {
+		sendText('text', text);
+		goto(resolve('/text-formatter'));
+	}
 </script>
 
 <svelte:head>
@@ -36,35 +54,49 @@
   <meta name="description" content="Count words instantly and estimate reading time as you type." />
 </svelte:head>
 
-<section class="page-width py-8 sm:py-12">
-  <a href={resolve('/') + '#apps'} class="quiet-link inline-flex min-h-11 items-center text-sm">&larr; All tools</a>
-  <div class="mb-8 mt-5">
-    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Word Counter</h1>
-    <p class="mt-3 text-muted">A quick check for your next article, email, or caption.</p>
-  </div>
-  <div class="grid items-start gap-6 lg:grid-cols-[1fr_320px]">
-    <div class="rounded-2xl border border-line bg-surface p-5 sm:p-7">
-      <div class="mb-4 flex items-center justify-between gap-4">
-        <label for="counter-input" class="font-semibold">Your text</label>
-        <button type="button" onclick={() => text = ''} disabled={!text} class="min-h-11 rounded-lg px-3 text-sm text-accent hover:bg-soft disabled:cursor-not-allowed disabled:opacity-40">Clear text</button>
+<section class="tone-words">
+  <div class="page-width pt-8 sm:pt-10">
+    <ToolHeader code="words" />
+
+    <div class="panel overflow-hidden">
+      <div class="flex flex-wrap items-center gap-2 border-b border-line px-4 py-2">
+        <label for="counter-input" class="mr-auto text-sm font-semibold">Your text</label>
+        {#if !text}
+          <button type="button" class="ghost" onclick={() => (text = EXAMPLE)}>Try an example</button>
+        {:else}
+          <button type="button" class="ghost" onclick={tidyInFormatter}>Tidy in Text Formatter →</button>
+          <button type="button" class="ghost" onclick={() => (text = '')}>Clear</button>
+        {/if}
       </div>
-      <textarea id="counter-input" bind:value={text} rows="14" class="field min-h-80 leading-7" placeholder="Paste your text here, or start writing..." aria-describedby="text-privacy"></textarea>
-      <p id="text-privacy" class="mt-4 text-sm text-muted">Only in your browser. Your text isn't saved or uploaded.</p>
+      <textarea id="counter-input" bind:value={text} rows="14" class="block min-h-[26rem] w-full resize-y bg-transparent px-5 py-4 text-lg leading-8 text-ink outline-none placeholder:text-muted" placeholder="Paste your text here, or start writing…"></textarea>
     </div>
-    <aside aria-label="Text statistics" class="overflow-hidden rounded-2xl border border-line bg-surface">
-      <div class="bg-accent-soft px-6 py-7">
-        <h2 class="text-sm font-medium text-accent">Word count</h2>
-        <p class="mt-2 text-5xl font-bold tabular-nums text-accent">{words.toLocaleString()}</p>
-      </div>
-      <dl class="divide-y divide-line px-6">
-        <div class="flex justify-between gap-3 py-5"><dt class="text-muted">Characters</dt><dd class="font-semibold tabular-nums">{characters.toLocaleString()}</dd></div>
-        <div class="flex justify-between gap-3 py-5"><dt class="text-muted">Without spaces</dt><dd class="font-semibold tabular-nums">{charactersNoSpaces.toLocaleString()}</dd></div>
-        <div class="flex justify-between gap-3 py-5"><dt class="text-muted">Reading time</dt><dd class="font-semibold tabular-nums">{readingTime}</dd></div>
-      </dl>
-      <div class="border-t border-line bg-soft px-6 py-5">
-        <label for="wpm" class="mb-2 block text-sm font-medium">Reading speed</label>
-        <div class="flex items-center gap-3"><input id="wpm" type="number" min="50" max="600" step="10" bind:value={wordsPerMinute} class="field w-24" /><span class="text-sm text-muted">words / minute</span></div>
-      </div>
-    </aside>
+
+    <!-- A big at-a-glance number, the rest lives in the status bar. -->
+    <p class="mt-6 flex items-baseline gap-3" aria-live="polite">
+      <span class="num text-6xl font-bold text-accent sm:text-7xl">{words.toLocaleString()}</span>
+      <span class="text-lg text-muted">{words === 1 ? 'word' : 'words'}</span>
+    </p>
   </div>
+
+  <StatusBar
+    items={[
+      { label: 'words', value: words, strong: true },
+      { label: 'characters', value: characters },
+      { label: 'without spaces', value: charactersNoSpaces },
+      { label: 'to read', value: readingTime }
+    ]}
+  >
+    {#snippet extra()}
+      <label class="flex items-center gap-1.5 text-muted">
+        at
+        <input type="number" min="50" max="600" step="10" bind:value={wordsPerMinute} class="num w-16 rounded border border-line bg-surface px-1.5 py-0.5 text-ink" aria-label="Reading speed in words per minute" />
+        wpm
+      </label>
+    {/snippet}
+  </StatusBar>
 </section>
+
+<style>
+  .ghost { min-height: 36px; padding: 4px 10px; border-radius: 8px; color: var(--accent); font-size: 14px; font-weight: 500; }
+  .ghost:hover { background: var(--accent-soft); }
+</style>

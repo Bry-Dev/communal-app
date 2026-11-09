@@ -10,12 +10,10 @@ export default {
         'on-accent': 'var(--on-accent)', warning: 'var(--warning)', 'warning-soft': 'var(--warning-soft)'
       },
       fontFamily: {
-        'montserrat-light' : "montserrat-light",
-        'montserrat-medium' : "montserrat-medium",
-        'montserrat-regular' : "montserrat-regular",
-        'montserrat-bold' : "montserrat-bold",
-      },
-    },
+        display: ['"Bricolage Grotesque Variable"', '"Segoe UI"', 'sans-serif'],
+        mono: ['"JetBrains Mono Variable"', 'ui-monospace', 'monospace']
+      }
+    }
   },
-  plugins: [],
-}
+  plugins: []
+};
