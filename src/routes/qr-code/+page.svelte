@@ -2,8 +2,11 @@
   import SvgQR from '@svelte-put/qr/svg/QR.svelte';
   import QrContentForm from '$lib/components/QrContentForm.svelte';
   import { buildQrContent, createQrContent, qrTypes } from '$lib/qr/content';
-  import { resolve } from '$app/paths';
   import { createQrPngDataUrl } from '@svelte-put/qr';
+  import { onMount } from 'svelte';
+  import StatusBar from '$lib/components/StatusBar.svelte';
+  import ToolHeader from '$lib/components/ToolHeader.svelte';
+  import { receiveText } from '$lib/handoff';
 
   const validImageTypes = ['image/gif', 'image/jpeg', 'image/png'];
   const MAX_DIMENSION = 1000;
@@ -16,10 +19,10 @@
   const presets = [
     {
       label: 'App Hub',
-      moduleFill: '#0f172a',
-      anchorOuterFill: '#2563eb',
-      anchorInnerFill: '#1d4ed8',
-      backgroundFill: '#f8fafc',
+      moduleFill: '#1c1a17',
+      anchorOuterFill: '#c2410c',
+      anchorInnerFill: '#9a3412',
+      backgroundFill: '#fffdf8',
       shape: 'square' as const
     },
     {
@@ -162,6 +165,24 @@
     };
   });
 
+  let downloadLink: HTMLAnchorElement | undefined = $state();
+
+  onMount(() => {
+    const sent = receiveText('qr');
+    if (sent !== undefined) content = { ...content, kind: 'text', text: sent.trim() };
+  });
+
+  function tryExample() {
+    content = { ...content, kind: 'wifi', wifi: { ssid: 'Garden-Guest', password: 'lemon-cake-2026', security: 'WPA', hidden: false } };
+  }
+
+  function onKeydown(event: KeyboardEvent) {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter' && downloadLink) {
+      event.preventDefault();
+      downloadLink.click();
+    }
+  }
+
   function applyPreset(preset: (typeof presets)[number]) {
     moduleFill = preset.moduleFill;
     anchorOuterFill = preset.anchorOuterFill;
@@ -208,44 +229,19 @@
   />
 </svelte:head>
 
-<section class="bg-canvas text-ink">
+<svelte:window onkeydown={onKeydown} />
 
-  <div class="page-width py-8 sm:py-12">
-    <div class="mb-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-      <div class="max-w-3xl space-y-4">
-        <a
-          href={resolve('/') + '#apps'}
-          class="quiet-link inline-flex min-h-11 items-center text-sm"
-        >
-          ← Back to App Hub
-        </a>
+<section class="tone-qr">
+  <div class="page-width pt-8 sm:pt-10">
+    <ToolHeader code="qr">
+      {#snippet actions()}
+        <button type="button" class="inline-flex min-h-10 items-center rounded-lg px-3 text-sm font-medium text-accent hover:bg-accent-soft" onclick={tryExample}>Try a Wi-Fi example</button>
+      {/snippet}
+    </ToolHeader>
 
-        <div class="space-y-3">
-          <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
-            QR Code Generator
-          </h1>
-          <p class="max-w-2xl text-sm leading-6 text-muted sm:text-sm lg:text-base">
-            Share a link, connect guests to Wi-Fi, or create a contact card. Make it yours and download a PNG.
-          </p>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-start">
+    <div class="grid gap-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-start">
       <div class="space-y-6">
-        <div class="rounded-2xl border border-line bg-surface p-6 sm:p-8">
-          <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p class="text-sm font-semibold text-accent sm:text-sm">Customize</p>
-              <h2 class="mt-2 text-xl font-semibold text-ink sm:text-2xl">Build your QR code</h2>
-            </div>
-            <div class="rounded-2xl border border-line bg-soft px-4 py-3 text-right">
-              <p class="text-sm text-muted">Canvas</p>
-              <p class="mt-1 text-base font-semibold text-ink sm:text-lg">{width} × {height}</p>
-            </div>
-          </div>
-
+        <div class="panel p-5 sm:p-7">
           <div class="space-y-8">
             <QrContentForm bind:content error={payload.error} />
 
@@ -424,21 +420,19 @@
         </div>
       </div>
 
-      <div class="lg:sticky lg:top-24">
-        <div class="overflow-hidden rounded-2xl border border-line bg-surface">
-          <div class="border-b border-line px-6 py-5 sm:px-8">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p class="text-sm font-semibold text-accent sm:text-sm">Preview</p>
-                <h2 class="mt-2 text-xl font-semibold text-ink sm:text-2xl">{data ? 'Your QR code' : 'Add your details'}</h2>
-              </div>
+      <div class="lg:sticky lg:top-20">
+        <div class="panel overflow-hidden">
+          <div class="border-b border-line px-5 py-3">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <h2 class="text-lg font-bold">Preview</h2>
               {#if dataURL && data && !dimensionError}
                 <a
+                  bind:this={downloadLink}
                   href={dataURL}
                   download={`qr-${content.kind}.png`}
                   class="button"
                 >
-                  Download PNG
+                  Download PNG <span class="kbd hidden border-transparent bg-transparent text-current opacity-75 shadow-none sm:inline-flex">Ctrl ↵</span>
                 </a>
               {:else}
                 <button type="button" disabled class="button cursor-not-allowed opacity-50">{data && !dimensionError && !exportError ? 'Preparing PNG...' : 'Download PNG'}</button>
@@ -446,8 +440,8 @@
             </div>
           </div>
 
-          <div class="space-y-6 p-6 sm:p-8">
-            <div class="rounded-xl bg-soft p-3 sm:p-4">
+          <div class="space-y-4 p-5 sm:p-6">
+            <div class="checker rounded-xl p-3 sm:p-6">
               <div class="flex items-center justify-center p-2">
                 {#if data}
                   <SvgQR
@@ -473,37 +467,25 @@
               <p class="rounded-lg bg-warning-soft px-4 py-3 text-sm text-warning" role="status">{dimensionError || exportError}</p>
             {/if}
 
-            <div class="grid gap-3 sm:grid-cols-3">
-              <div class="rounded-2xl border border-line bg-soft p-4">
-                <p class="text-sm text-muted">Shape</p>
-                <p class="mt-2 text-sm font-medium text-ink sm:text-sm">{shape}</p>
-              </div>
-              <div class="rounded-2xl border border-line bg-soft p-4">
-                <p class="text-sm text-muted">Logo</p>
-                <p class="mt-2 text-sm font-medium text-ink sm:text-sm">{withLogo ? 'Enabled' : 'None'}</p>
-              </div>
-              <div class="rounded-2xl border border-line bg-soft p-4">
-                <p class="text-sm text-muted">Content</p>
-                <p class="mt-2 text-sm font-medium text-ink sm:text-sm">{contentType.label}</p>
-              </div>
-            </div>
-
-            <div class="rounded-xl border border-line bg-soft p-5">
-              <h3 class="text-sm font-semibold text-muted sm:text-sm">Helpful notes</h3>
-              <ul class="mt-4 list-disc space-y-3 pl-4 text-sm leading-6 text-muted">
-                <li>Keep height and width balanced for a crisp square export.</li>
-                <li>Larger than 1000px still works, but the resulting PNG will be heavier.</li>
-                <li>High contrast between background and module colors improves scan reliability.</li>
-              </ul>
-            </div>
+            <p class="text-center text-xs text-muted">Tip: dark dots on a light background scan best.</p>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <StatusBar
+    items={[
+      { label: '', value: contentType.label, strong: true },
+      { label: 'px', value: `${width}×${height}` },
+      { label: 'dots', value: shape === 'circle' ? 'round' : 'square' },
+      { label: 'logo', value: withLogo && logo ? 'with' : 'no' }
+    ]}
+  />
 </section>
 
 <style>
+  .checker { background-color: var(--soft); background-image: radial-gradient(var(--line) 1px, transparent 1px); background-size: 14px 14px; }
   .preset-picker summary:hover { background: var(--soft); }
   .preset-chevron { transition: transform 160ms; }
   .preset-picker[open] .preset-chevron { transform: rotate(180deg); }

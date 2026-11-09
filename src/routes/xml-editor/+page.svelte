@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { resolve } from '$app/paths';
+	import { onMount } from 'svelte';
+	import StatusBar from '$lib/components/StatusBar.svelte';
+	import ToolHeader from '$lib/components/ToolHeader.svelte';
+	import { receiveText } from '$lib/handoff';
 	import { describeParseError, formatXml, locateXmlError, minifyXml, type XmlParseError } from '$lib/xml/format';
 
 	type TreeNode = {
@@ -118,6 +121,21 @@
 		syncScroll();
 	}
 
+	onMount(() => {
+		const sent = receiveText('xml');
+		if (sent !== undefined) {
+			xml = sent;
+			fileName = 'pasted.xml';
+		}
+	});
+
+	function onWindowKeydown(event: KeyboardEvent) {
+		if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+			event.preventDefault();
+			format();
+		}
+	}
+
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key !== 'Tab' || !textarea) return;
 		event.preventDefault();
@@ -194,19 +212,22 @@
 	{/if}
 {/snippet}
 
-<section class="page-width py-8 sm:py-12">
-	<a href={resolve('/') + '#apps'} class="quiet-link inline-flex min-h-11 items-center text-sm">&larr; All tools</a>
-	<div class="mb-8 mt-5">
-		<h1 class="text-3xl font-bold tracking-tight sm:text-4xl">XML Editor</h1>
-		<p class="mt-3 text-muted">Edit, validate, format, and explore any XML document.</p>
-	</div>
+<svelte:window onkeydown={onWindowKeydown} />
 
-	<div class="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-		<div class="min-w-0 rounded-2xl border border-line bg-surface p-5 sm:p-7">
+<section class="tone-xml">
+	<div class="page-width pt-8 sm:pt-10">
+	<ToolHeader code="xml">
+		{#snippet actions()}
+			<button type="button" class="inline-flex min-h-10 items-center rounded-lg px-3 text-sm font-medium text-accent hover:bg-accent-soft" onclick={() => { xml = SAMPLE; fileName = 'document.xml'; }}>Try an example</button>
+		{/snippet}
+	</ToolHeader>
+
+	<div class="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
+		<div class="panel min-w-0 p-4 sm:p-5">
 			<div class="mb-4 flex flex-wrap items-center gap-2">
 				<button type="button" class={toolButton} onclick={() => fileInput?.click()}>Open file</button>
 				<input bind:this={fileInput} type="file" accept=".xml,.svg,.xsd,.xsl,.xslt,.rss,.atom,.plist,.config,.csproj,text/xml,application/xml" class="hidden" onchange={openFile} />
-				<button type="button" class={toolButton} onclick={format} disabled={analysis.status !== 'valid'}>Format</button>
+				<button type="button" class="button min-h-11 px-3" onclick={format} disabled={analysis.status !== 'valid'}>Format <span class="kbd hidden border-transparent bg-transparent text-current opacity-75 shadow-none sm:inline-flex">Ctrl ↵</span></button>
 				<button type="button" class={toolButton} onclick={minify} disabled={analysis.status !== 'valid'}>Minify</button>
 				<label class="sr-only" for="indent">Indentation</label>
 				<select id="indent" bind:value={indent} class="field min-h-11 w-auto py-2 text-sm">
@@ -244,15 +265,13 @@
 					class="relative block h-full w-full resize-none bg-transparent px-4 py-3 text-ink outline-none"
 					style="line-height: {LINE_HEIGHT}px; tab-size: 4"
 					placeholder="Paste XML here, or open a file..."
-					aria-describedby="xml-status xml-privacy"
+					aria-describedby="xml-status"
 				></textarea>
 				</div>
 			</div>
 
 			<div id="xml-status" class="mt-4 text-sm" aria-live="polite">
-				{#if analysis.status === 'valid'}
-					<p class="font-medium text-emerald-500">✓ Well-formed XML</p>
-				{:else if analysis.status === 'invalid'}
+				{#if analysis.status === 'invalid'}
 					<div class="flex flex-wrap items-center gap-3 rounded-lg border border-warning bg-warning-soft px-4 py-3 text-warning">
 						<p class="flex-1">
 							<span class="font-semibold">Not valid XML{errorLocation ? ` (line ${errorLocation.line}, column ${errorLocation.column})` : ''}:</span>
@@ -264,21 +283,14 @@
 					</div>
 				{/if}
 			</div>
-			<p id="xml-privacy" class="mt-3 text-sm text-muted">Only in your browser. Your XML isn't saved or uploaded.</p>
 		</div>
 
-		<aside aria-label="Document structure" class="overflow-hidden rounded-2xl border border-line bg-surface">
-			<div class="bg-accent-soft px-6 py-5">
-				<h2 class="text-sm font-medium text-accent">Document</h2>
-				<label for="file-name" class="sr-only">File name</label>
-				<input id="file-name" bind:value={fileName} class="mt-2 w-full bg-transparent text-lg font-bold text-accent outline-none" />
+		<aside aria-label="Document structure" class="panel overflow-hidden">
+			<div class="border-b border-line bg-accent-soft px-5 py-3">
+				<label for="file-name" class="text-xs font-semibold uppercase tracking-wider text-accent">File</label>
+				<input id="file-name" bind:value={fileName} class="num w-full bg-transparent font-semibold text-ink outline-none" />
 			</div>
-			<dl class="grid grid-cols-3 divide-x divide-line border-b border-line text-center">
-				<div class="py-4"><dt class="text-xs text-muted">Elements</dt><dd class="font-semibold tabular-nums">{analysis.status === 'valid' ? analysis.elements.toLocaleString() : '–'}</dd></div>
-				<div class="py-4"><dt class="text-xs text-muted">Attributes</dt><dd class="font-semibold tabular-nums">{analysis.status === 'valid' ? analysis.attributes.toLocaleString() : '–'}</dd></div>
-				<div class="py-4"><dt class="text-xs text-muted">Depth</dt><dd class="font-semibold tabular-nums">{analysis.status === 'valid' ? analysis.depth : '–'}</dd></div>
-			</dl>
-			<div class="max-h-[28rem] overflow-auto px-3 py-4 font-mono text-xs leading-5">
+			<div class="max-h-[30rem] overflow-auto px-3 py-4 font-mono text-xs leading-5">
 				{#if analysis.status === 'valid'}
 					{@render treeNode(analysis.root, true)}
 					{#if analysis.truncated}
@@ -290,9 +302,21 @@
 					<p class="px-3 font-sans text-muted">The tree appears here once you add XML.</p>
 				{/if}
 			</div>
-			<div class="border-t border-line bg-soft px-6 py-4">
-				<button type="button" class="text-sm font-medium text-accent hover:underline" onclick={() => { xml = SAMPLE; fileName = 'document.xml'; }}>Load sample</button>
-			</div>
 		</aside>
 	</div>
+	</div>
+
+	<StatusBar
+		items={analysis.status === 'valid'
+			? [
+					{ label: '', value: '✓ Well-formed', strong: true },
+					{ label: 'elements', value: analysis.elements },
+					{ label: 'attributes', value: analysis.attributes },
+					{ label: 'deep', value: analysis.depth },
+					{ label: 'lines', value: lineCount }
+				]
+			: analysis.status === 'invalid'
+				? [{ label: '', value: '✕ Not valid' }, { label: 'lines', value: lineCount }]
+				: [{ label: 'Empty', value: '' }]}
+	/>
 </section>

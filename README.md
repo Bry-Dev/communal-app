@@ -11,9 +11,12 @@ I made this to help my wife and friends. Suggestions for useful new tools are al
 | **QR Code Generator** | Create codes for links/text, Wi-Fi, email, phone calls, SMS, and vCard contacts. Choose from nine collapsible presets, customize colors and shapes, add a logo, and download a PNG. |
 | **Word Counter** | Count words and characters, including characters without spaces. Estimate reading time with an adjustable reading speed. |
 | **Text Formatter** | Switch between uppercase, lowercase, title case, and sentence case. Trim line edges, collapse repeated spaces, remove empty or duplicate lines, and join lines into a paragraph. Compare the original with a live result, then copy or download a `.txt` file. |
+| **Password Generator** | Create random passwords (4–128 characters) from uppercase, lowercase, numbers, and symbols, with at least one of each selected type. Optionally avoid look-alike characters. Shows estimated strength; copy with Ctrl+Enter. Uses the browser's cryptographic random generator and never stores passwords. |
+| **Date Calculator** | Count the days between two dates (with weeks, weekdays and weekend days, optionally including the end date); add or subtract days, weeks, months or years; and work out an age with the next birthday. Typed dates are read day-first (9/11/2026 is 9 November). |
+| **Percentage Calculator** | Answer four everyday questions as you type: X% of Y, X is what % of Y, percentage change, and an amount with a percentage taken off or added on. Accepts numbers like `$1,200` and `15%`. |
 | **XML Editor** | Edit XML with line numbers, check well-formedness and error locations, format or minify, explore a collapsible document tree, and open or download XML files. |
 
-**Coming soon:** Quick Notes Cleaner.
+**Coming soon:** Notes Cleaner, Text Compare, Name Picker, Image Resizer, Images to PDF, and JSON Formatter.
 
 ## Features and privacy
 
@@ -48,6 +51,9 @@ Open the local URL printed by Vite. The development server uses the root path `/
 | `npm run check:watch` | Watch for Svelte/TypeScript issues while editing. |
 | `npm run test:qr` | Run QR payload and rendering tests. |
 | `npm run test:text` | Run text-formatting tests. |
+| `npm run test:password` | Run password generator tests. |
+| `node --test tests/date-calc.test.mjs tests/percent-calc.test.mjs` | Run date and percentage tests. |
+| `npm test` | Run all tests. |
 | `node --test tests/xml-format.test.mjs` | Run XML-formatting tests. |
 | `npm run build` | Generate the static production site in `build/`. |
 | `npm run preview` | Preview an existing production build locally. |

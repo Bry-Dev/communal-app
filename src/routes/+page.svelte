@@ -1,53 +1,94 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
+  import type { RouteId } from '$app/types';
   import AppCard from '$lib/components/home/AppCard.svelte';
   import Hero from '$lib/components/home/Header.svelte';
   import SuggestionCta from '$lib/components/home/SuggestionCta.svelte';
-  import ValueProps from '$lib/components/home/ValueProps.svelte';
   import ToolIcon from '$lib/components/ToolIcon.svelte';
-  import { apps } from '$lib/data/apps';
-  const liveApps = apps.filter((app) => app.status === 'live');
-  const plannedApps = apps.filter((app) => app.status === 'coming-soon');
-  const categories = ['All tools', ...new Set(liveApps.map((app) => app.category))];
-  let selectedCategory = 'All tools';
-  $: filteredApps = liveApps.filter((app) => selectedCategory === 'All tools' || app.category === selectedCategory);
+  import { findApp, liveApps, plannedApps, toneOf, type HubApp } from '$lib/data/apps';
+  import { prefs } from '$lib/prefs.svelte';
+
+  const categories = ['All', ...new Set(liveApps.map((app) => app.category))];
+  let selectedCategory = $state('All');
+  const filteredApps = $derived(liveApps.filter((app) => selectedCategory === 'All' || app.category === selectedCategory));
+
+  const starred = $derived(prefs.favorites.map(findApp).filter((app): app is HubApp => app?.status === 'live'));
+  const recent = $derived(prefs.recents.map(findApp).filter((app): app is HubApp => app?.status === 'live'));
 </script>
+
 <svelte:head>
   <title>App Hub — Free tools for everyday tasks</title>
-  <meta name="description" content="Make a QR code or count your words with free, simple tools that work right in your browser. No account needed." />
+  <meta name="description" content="Make a QR code, count your words, or tidy text with free, simple tools that work right in your browser. No account needed." />
 </svelte:head>
+
 <Hero />
+
+{#if prefs.loaded && (starred.length || recent.length)}
+  <section class="page-width pb-8" aria-label="Your tools">
+    <div class="grid gap-3 sm:grid-cols-2">
+      {#if starred.length}
+        <div class="shelf">
+          <h2 class="shelf-title">★ Starred</h2>
+          <div class="flex flex-wrap gap-2">
+            {#each starred as app (app.code)}
+              <a class="chip {toneOf(app.code)}" href={resolve(app.href as RouteId)}><ToolIcon code={app.code} size={16} />{app.title}</a>
+            {/each}
+          </div>
+        </div>
+      {/if}
+      {#if recent.length}
+        <div class="shelf">
+          <h2 class="shelf-title">
+            Pick up where you left off
+            <button type="button" class="ml-auto text-xs font-normal text-muted hover:text-ink hover:underline" onclick={() => prefs.clearRecents()}>Clear</button>
+          </h2>
+          <div class="flex flex-wrap gap-2">
+            {#each recent as app (app.code)}
+              <a class="chip {toneOf(app.code)}" href={resolve(app.href as RouteId)}><ToolIcon code={app.code} size={16} />{app.title}</a>
+            {/each}
+          </div>
+        </div>
+      {/if}
+    </div>
+  </section>
+{/if}
+
 <section id="apps" class="page-width pb-14" aria-labelledby="tools-title">
-  <div class="mb-6 flex flex-col justify-between gap-5 border-t border-line pt-7 sm:flex-row sm:items-center">
-    <h2 id="tools-title" class="flex items-center gap-3 text-xl font-bold">Your everyday toolkit <span class="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-soft px-2 font-sans text-xs font-medium text-muted">{liveApps.length}<span class="sr-only"> tools</span></span></h2>
-    <div class="tool-filters flex flex-wrap gap-1" role="group" aria-label="Filter tools by category">
+  <div class="mb-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <h2 id="tools-title" class="flex items-baseline gap-2 text-2xl font-bold">Toolkit <span class="num text-sm font-normal text-muted">{String(liveApps.length).padStart(2, '0')}</span></h2>
+    <div class="flex flex-wrap gap-1" role="group" aria-label="Filter tools by category">
       {#each categories as category}
-        <button type="button" on:click={() => selectedCategory = category} aria-pressed={selectedCategory === category} class="filter-button min-h-11 rounded-full px-4 py-2 text-sm font-medium">{category}</button>
+        <button type="button" onclick={() => (selectedCategory = category)} aria-pressed={selectedCategory === category} class="filter">{category}</button>
       {/each}
     </div>
   </div>
-  <div class="grid gap-5 md:grid-cols-2">
-    {#each filteredApps as app}<AppCard {app} />{/each}
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    {#each filteredApps as app (app.code)}<AppCard {app} />{/each}
   </div>
   <p class="sr-only" role="status">{filteredApps.length} tools shown</p>
-  <div class="mt-9">
-    <h2 class="mb-4 text-sm font-medium text-muted">On the workbench</h2>
-    <div class="grid gap-4 md:grid-cols-2">
-      {#each plannedApps as app}
-        <div class="flex items-center gap-4 rounded-xl border border-dashed border-line px-5 py-4">
-          <span class="text-muted"><ToolIcon code={app.code} /></span>
-          <div class="flex-1"><h3 class="text-sm font-medium">{app.title}</h3><p class="mt-1 text-sm text-muted">{app.eyebrow}</p></div>
-          <span class="text-xs text-muted">Coming soon</span>
-        </div>
+
+  <div class="mt-12">
+    <h2 class="mb-3 flex items-center gap-2 text-sm font-semibold text-muted">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m14 7 3-3 3 3-3 3M17 4v6M3 21l9-9M8 12l4 4" /></svg>
+      On the workbench
+    </h2>
+    <ul class="flex flex-wrap gap-2">
+      {#each plannedApps as app (app.code)}
+        <li class="planned" title={app.tagline}><ToolIcon code={app.code} size={16} />{app.title}</li>
       {/each}
-    </div>
+    </ul>
   </div>
 </section>
-<ValueProps />
+
 <SuggestionCta />
+
 <style>
-  .tool-filters { align-self: flex-start; border: 1px solid var(--line); border-radius: 28px; padding: 4px; background: var(--soft); }
-  .filter-button { color: var(--muted); transition: background 160ms, color 160ms, box-shadow 160ms; }
-  .filter-button:hover { background: var(--soft); color: var(--ink); }
-  .filter-button[aria-pressed='true'] { background: var(--surface); color: var(--accent); box-shadow: 0 1px 4px var(--shadow); }
-  @media (max-width: 359px) { .filter-button { padding-inline: 12px; font-size: 12px; } }
+  .shelf { padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--surface) 60%, transparent); }
+  .shelf-title { display: flex; align-items: center; margin-bottom: 10px; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .chip { display: inline-flex; min-height: 36px; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 14px; font-weight: 600; transition: background 160ms, color 160ms; }
+  .chip:hover { background: var(--accent); color: var(--on-accent); }
+  .filter { min-height: 36px; padding: 4px 14px; border: 1px solid transparent; border-radius: 999px; color: var(--muted); font-size: 14px; font-weight: 500; transition: background 160ms, color 160ms, border-color 160ms; }
+  .filter:hover { color: var(--ink); background: var(--soft); }
+  .filter[aria-pressed='true'] { border-color: var(--ink); background: var(--ink); color: var(--canvas); }
+  .planned { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px dashed var(--line); border-radius: 999px; color: var(--muted); font-size: 13px; }
 </style>

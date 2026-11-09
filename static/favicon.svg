@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- App Hub: four tool tiles. Mid-tone colours so it reads on light and dark browser tabs. -->
+  <rect x="2" y="2" width="13" height="13" rx="3.5" fill="#2f9e5f"/>
+  <rect x="17" y="2" width="13" height="13" rx="3.5" fill="#e8590c"/>
+  <rect x="2" y="17" width="13" height="13" rx="3.5" fill="#7c5cd6"/>
+  <rect x="17" y="17" width="13" height="13" rx="3.5" fill="#14a39a"/>
+</svg>
